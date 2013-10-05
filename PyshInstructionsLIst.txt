@@ -1,9 +1,0 @@
-$nia
-$nis
-$nim
-$nid
-$nimd
-#$nilt
-#$nigt
-$nimin
-$nimax
