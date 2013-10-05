@@ -64,7 +64,7 @@ class PyshState(object):
         else:
             return None
         
-    
+'''    
 g = PyshState()
 g.push_item(5, 'int')
 g.push_item(2.5, 'float')
@@ -73,3 +73,4 @@ g.state_pretty_print()
 print
 g.pop_item('int')
 g.state_pretty_print()
+'''
