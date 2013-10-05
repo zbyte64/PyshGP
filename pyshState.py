@@ -5,6 +5,7 @@ Created on Oct 2, 2013
 '''
 import pyshGlobals
 from stacks import Number_Instructions
+from stacks import PyshStack
 
 class PyshState(object):
     '''
@@ -20,7 +21,7 @@ class PyshState(object):
             if (typ is int) or (typ is float):
                 self.stacks[typ.__name__] = Number_Instructions()
             else:
-                pass #FOR NOW
+                self.stacks[typ.__name__] = PyshStack()
 
     def state_pretty_print(self):
         for i in self.stacks:
@@ -64,7 +65,7 @@ class PyshState(object):
         else:
             return None
         
-'''    
+'''
 g = PyshState()
 g.push_item(5, 'int')
 g.push_item(2.5, 'float')
