@@ -20,6 +20,8 @@ class PyshState(object):
         for typ in pyshGlobals.pysh_types:
             if (typ is int) or (typ is float):
                 self.stacks[typ.__name__] = Number_Instructions()
+            elif typ == "Exec":
+                self.stacks[typ] = PyshStack()
             else:
                 self.stacks[typ.__name__] = PyshStack()
 

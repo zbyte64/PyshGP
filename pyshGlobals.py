@@ -5,21 +5,16 @@ Created on Oct 2, 2013
 '''
 import random
 
-class Exec(object):
-    symbol = None
-    def __init__(self, sym):
-        self.symbol = sym
-
 def rand(typ, min = None, max = None):
     if typ == int:
         return random.randint(min, max)
     elif type == float:
         return random.uniform(min, max)
-    elif typ is Exec:
+    elif typ == "Exec":
         line = random.choice(open('PyshInstructionsList.txt').readlines())
         if line[:1] == '#':
-            return rand(Exec)
+            return rand("Exec")
         else:
-            return line
+            return line[:len(line)-1]
         
-pysh_types = [int, float, Exec]
+pysh_types = [int, float, "Exec"]

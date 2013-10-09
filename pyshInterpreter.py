@@ -7,7 +7,7 @@ import pyshState
 import pyshGlobals
 import random
 
-from pyshGlobals import Exec
+#from pyshGlobals import Exec
 
 class PyshInterpreter(object):
     '''
@@ -20,26 +20,37 @@ class PyshInterpreter(object):
         Constructor
         '''
         self.state = pyshState.PyshState()
-        self.state.push_item(1, 'int') 
-        self.state.push_item(2, 'int')       
-        self.state.push_item(pyshGlobals.rand(Exec), 'Exec')
+        self.state.push_item(random.randint(1, 10), 'int')
+        
+        for x in range(10):
+             self.state.push_item(random.randint(1, 10), 'int')
+             self.state.push_item(pyshGlobals.rand('Exec'), 'Exec')
+             
         self.state.state_pretty_print()
-        self.temp_step()
+        
+        for x in range(10):
+             self.temp_exec()
+             print
+             self.state.state_pretty_print()
         
     def temp_step(self):
-        #self.state.push_item(random.randint(1, 10), 'int')
-        #self.state.push_item(pyshGlobals.rand(Exec), 'Exec')
+        '''
+        Not used anymore. Will return perhaps.
+        '''
+        self.state.push_item(random.randint(1, 10), 'int')
+        self.state.push_item(pyshGlobals.rand('Exec'), 'Exec')
         
-        #print(self.state.top_item('Exec'))
-        #print(self.state.top_item('int'))
-        #print
+        print(self.state.top_item('Exec')[3:])
+        print(self.state.top_item('int'))
+        print
         
         self.temp_exec()
+        #print
+        self.state.state_pretty_print()
         
     def temp_exec(self):
         ex = self.state.pop_item('Exec')
         if ex[:3] == '$ni':
-            print(ex[3:])
             if ex[3:] == 'a':
                 self.state.stacks['int'].adder()
             elif ex[3:] == 's':
@@ -57,6 +68,6 @@ class PyshInterpreter(object):
             else:
                 print('No Nunmber Instruction with Symbol: ' + ex)
         else:
-            print('Non-number types Not Implemented Yet!')
+            print('Non-Numbers not implemented yet')        
         
 pi = PyshInterpreter()
