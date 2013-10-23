@@ -1,4 +1,5 @@
 #List of instructions that are possible for the Exec stack to hold
+###THIS LIST WILL NO LONGER BE USED SOON###
 #
 #Number Instructions Symbols (ints and floats)
 $nia
@@ -11,4 +12,4 @@ $nimd
 $nimin
 $nimax
 #
-#Other Instruction Symbols To Come!
+#Other Instruction Symbols To Come! (maybe)

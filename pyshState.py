@@ -20,8 +20,6 @@ class PyshState(object):
         for typ in pyshGlobals.pysh_types:
             if (typ is int) or (typ is float):
                 self.stacks[typ.__name__] = Number_Instructions()
-            elif typ == "Exec":
-                self.stacks[typ] = PyshStack()
             else:
                 self.stacks[typ.__name__] = PyshStack()
 
@@ -34,7 +32,7 @@ class PyshState(object):
         '''
         Value pushed on the named stack. This is a utility, not for use in Push programs.
         '''
-        self.stacks[typ].stack.append(val)
+        self.stacks[typ].append(val)
         
     def top_item(self, typ):
         '''

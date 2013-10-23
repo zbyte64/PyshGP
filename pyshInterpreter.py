@@ -7,67 +7,53 @@ import pyshState
 import pyshGlobals
 import random
 
-#from pyshGlobals import Exec
+from pyshGlobals import Exec
 
 class PyshInterpreter(object):
     '''
     classdocs
     '''
-    state = None
 
     def __init__(self):
         '''
         Constructor
         '''
         self.state = pyshState.PyshState()
-        self.state.push_item(random.randint(1, 10), 'int')
         
-        for x in range(10):
-             self.state.push_item(random.randint(1, 10), 'int')
-             self.state.push_item(pyshGlobals.rand('Exec'), 'Exec')
-             
+        #test fucntion
+        self.state.push_item(['INTEGER.*', 'INTEGER.STACKDEPTH', 'CODE.DO*RANGE', 'INTEGER.MAX'], "Exec")
         self.state.state_pretty_print()
         
-        for x in range(10):
-             self.temp_exec()
-             print
-             self.state.state_pretty_print()
-        
-    def temp_step(self):
-        '''
-        Not used anymore. Will return perhaps.
-        '''
-        self.state.push_item(random.randint(1, 10), 'int')
-        self.state.push_item(pyshGlobals.rand('Exec'), 'Exec')
-        
-        print(self.state.top_item('Exec')[3:])
-        print(self.state.top_item('int'))
+    def execute_instruction(self, instruction):
+        print('Will evaluate: ' + instruction)
+        print('Will then push result to correct stack')
         print
         
-        self.temp_exec()
-        #print
-        self.state.state_pretty_print()
-        
-    def temp_exec(self):
-        ex = self.state.pop_item('Exec')
-        if ex[:3] == '$ni':
-            if ex[3:] == 'a':
-                self.state.stacks['int'].adder()
-            elif ex[3:] == 's':
-                self.state.stacks['int'].subtracter()
-            elif ex[3:] == 'm':
-                self.state.stacks['int'].multiplier()
-            elif ex[3:] == 'd':
-                self.state.stacks['int'].divider()
-            elif ex[3:] == 'md':
-                self.state.stacks['int'].modder()
-            elif ex[3:] == 'min':
-                self.state.stacks['int'].minner()
-            elif ex[3:] == 'max':
-                self.state.stacks['int'].maxer()
-            else:
-                print('No Nunmber Instruction with Symbol: ' + ex)
+    def eval_push(self):
+        '''
+        Executes the contents of the exec stack.
+        '''
+        if len(self.state.stacks['Exec']) == 0:
+            print('Exec Stack Empty')
         else:
-            print('Non-Numbers not implemented yet')        
+            top_exec = self.state.pop_item('Exec')
+            if type(top_exec) == list and len(top_exec) > 1:
+                #is list reversal needed? I think yes
+                rev_exec = []
+                for i in reversed(top_exec):
+                    rev_exec.append(i)
+                for i in rev_exec:
+                    self.state.push_item(i, 'Exec')
+#                for i in top_exec:
+#                    self.state.push_item(i, 'Exec')
+            else:
+                self.execute_instruction(top_exec)
         
+                
 pi = PyshInterpreter()
+pi.eval_push()
+pi.eval_push()
+pi.eval_push()
+pi.eval_push()
+pi.eval_push()
+pi.eval_push()
