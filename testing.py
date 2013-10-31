@@ -4,11 +4,13 @@ Created on Oct 26, 2013
 @author: Eddie
 '''
 
-fs = []
-fs.append(lambda x: x**2)
-fs.append(lambda x: x**3)
+def foo(val):
+    def bar(num):
+        return val + num
+    return bar
 
-for i in range(3):
-    print(fs[0](i))
-    print(fs[1](i))
-    print
+f = foo(5)
+print f(10)
+
+g = foo(25)
+print g(50)
