@@ -64,3 +64,10 @@ def pop_item(type, state):
     return state
 
 state_pretty_print(make_push_state())
+
+def end_environment(state):
+    '''
+    Ends the current environment by popping the 'environment' stack and replacing
+    all stacks with those on the environment stack. Then, everything on the old
+    'return' stack is pushed onto the 'exec' stack.
+    '''
