@@ -63,11 +63,22 @@ def pop_item(type, state):
     state[type].pop()
     return state
 
-state_pretty_print(make_push_state())
-
 def end_environment(state):
     '''
     Ends the current environment by popping the 'environment' stack and replacing
     all stacks with those on the environment stack. Then, everything on the old
     'return' stack is pushed onto the 'exec' stack.
     '''
+    new_env = top_item('environment', state)
+    new_exec = state
+    new_exec = new_exec['exec'].join(new_env)
+    
+    old_return = state['return']
+    new_state = new_env
+    new_state['exec'] = new_exec
+    new_state['auxiliary'] = state['auxiliary']
+    while len(old_return>0):
+        old_return.pop(0)
+        new_state = push_item(old_return[0], 'exec', new_state)
+    return new_state
+        

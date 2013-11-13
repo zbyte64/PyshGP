@@ -4,7 +4,7 @@ Created on Oct 26, 2013
 @author: Eddie Pantridge Hampshire College 2013
 '''
 push_types = ['exec', 'integer', 'float', 'code', 
-              'boolean', 'string', 'enviroment']
+              'boolean', 'string', 'auxiliary', 'return', 'environment']
 
 max_number_magnitude = 1000000000000 # Used by keep_number_reasonable as the maximum size of any integer or float
 min_number_magnitude = 1.0E-10 # Used by keep_number_reasonable as the minimum magnitude of any float

@@ -5,8 +5,6 @@ Created on Oct 26, 2013
 '''
 from .. import pushstate
 
-#instructions for booleans
-
 def boolean_and(state):
     if len(state['boolean']>1):
         ret = pushstate.stack_ref('boolean', 0, state) and pushstate.stack_ref('boolean', 1, state)
