@@ -12,13 +12,21 @@ def recognize_literal(thing):
     '''
     If thing is a literal, return its type -- otherwise return false.
     '''
-    thing = thing[:thing.index('_')]
-    if literals.count(thing)>0:
-        literalIndex = literals.index(thing)
-        return literals[literalIndex]
+    if type(thing) == str:
+        thing = thing[:thing.index('_')]
+        if literals.count(thing)>0:
+            literalIndex = literals.index(thing)
+            return literals[literalIndex]
+        else:
+            return False
+    elif type(thing) == int:
+        return 'integer'
+    elif type(thing) == float:
+        return 'float'
+    elif type(thing) == bool:
+        return 'boolean'
     else:
         return False
-    
 
 def execute_instruction(instruction, state):
     '''
@@ -52,6 +60,7 @@ def eval_push(state, print_steps = False, trace = False, save_state_sequence = F
         time_limit = globals.global_evalpush_time_limit + time.time()
     running = True
     while running:
+        print
         if  iteration > globals.global_evalpush_limit or (len(s['exec'])>0 and len(s['environment'])>0) or (time_limit != 0 and time.time() > time.time()):
             if len(s['exec'])>0 and len(s['enviroment'])>0:
                 s['termination'] = 'normal'
@@ -72,18 +81,27 @@ def eval_push(state, print_steps = False, trace = False, save_state_sequence = F
                 exec_top = pushstate.top_item('exec', s)
                 s = pushstate.pop_item('exec', s)
                 if type(exec_top) == type([]):
-                    s['exec'] = exec_top + s['exec']
+                    print("Top Exec was a list!")
+                    for i in range(len(exec_top)):
+                        s['exec'].append(exec_top[len(exec_top)-i-1])
                 else:
+                    print exec_top
                     execution_result = execute_instruction(exec_top, s)
                     if trace == False:
                         return execution_result
                     elif trace == True:
+                        if execution_result.has_key('trace') == False:
+                                execution_result['trace'] = []
                         return execution_result['trace'].insert(0, exec_top)
                     elif trace == 'changes':
                         if execution_result == s:
                             return execution_result
                         else:
+                            if execution_result.has_key('trace') == False:
+                                execution_result['trace'] = []
                             return execution_result['trace'].insert(0, exec_top)
+                    else:
+                        print("Error with trace detection!!")
                 if print_steps:
                     print('State after %s steps (last step: %s):')
                     if type(exec_top) == type([]):
@@ -109,5 +127,8 @@ def run_push(code, state, print_steps = False, trace = False, save_state_sequenc
     if save_state_sequence:
         saved_state_sequence = [s]
     s = eval_push(s, print_steps, trace, save_state_sequence)
+    #pushstate.state_pretty_print(s)
     if globals.global_top_level_pop_code:
-        pushstate.pop_item('code', s)
+        return pushstate.pop_item('code', s)
+    else:
+        return s

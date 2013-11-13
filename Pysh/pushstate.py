@@ -30,14 +30,17 @@ def define_registered(instruction, definition):
     
 def state_pretty_print(state):
     for t in state.keys():
-        print t + ': ' + (', '.join(state[t]))
+        line = t + ': '
+        for i in state[t]:
+            line += str(i) + ", "
+        print line
 
 def push_item(value, type, state):
     '''
     Returns a copy of the state with the value pushed on the named stack. This is a utility,
     not for use in Push programs.
     '''
-    state[type] = value
+    state[type].append(value)
     return state
 
 def top_item(type, state):
@@ -60,6 +63,8 @@ def pop_item(type, state):
     Returns a copy of the state with the specified stack popped. This is a utility,
     not for use as an instruction in Push programs.
     '''
+    #for t in state.keys():
+    #    print str(state[t])
     state[type].pop()
     return state
 
