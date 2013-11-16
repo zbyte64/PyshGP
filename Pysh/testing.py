@@ -12,5 +12,4 @@ starting_code = [1, 2, 'integer_add']
 final_state = interpreter.run_push(starting_code, starting_state, True, True, True)
 print
 print
-print final_state
 pushstate.state_pretty_print(final_state)

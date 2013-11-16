@@ -45,11 +45,11 @@ def push_item(value, type, state):
 
 def top_item(type, state):
     '''
-    Returns the top item of the type stack in state.
+    Returns the top item of the type stack in state. 
     This is a utility, not for use as an instruction in Push programs.
     '''
     return state[type][len(state[type])-1]
-
+    
 def stack_ref(type, position, state):
     '''
     Returns the indicated item of the type stack in state.
@@ -75,8 +75,7 @@ def end_environment(state):
     'return' stack is pushed onto the 'exec' stack.
     '''
     new_env = top_item('environment', state)
-    new_exec = state
-    new_exec = new_exec['exec'].join(new_env)
+    new_exec = state['exec'] + new_env['exec']
     
     old_return = state['return']
     new_state = new_env

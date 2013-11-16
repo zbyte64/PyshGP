@@ -3,7 +3,7 @@ Created on Oct 26, 2013
 
 @author: Eddie Pantridge Hampshire College 2013
 '''
-push_types = ['exec', 'integer', 'float', 'code', 
+push_types = ['exec', 'integer', 'float', 'code', 'tag',
               'boolean', 'string', 'auxiliary', 'return', 'environment']
 
 max_number_magnitude = 1000000000000 # Used by keep_number_reasonable as the maximum size of any integer or float
@@ -38,7 +38,7 @@ global_top_level_push_code = True # When true, run-push will push the program's 
 global_top_level_pop_code = True # When true, run-push will pop the code stack after running the program
 global_evalpush_limit = 150 # The number of Push instructions that can be evaluated before stopping evaluation
 global_evalpush_time_limit = 0 # The time in nanoseconds that a program can evaluate before stopping, 0 means no time limit
-global_pop_when_tagging = 0 # When true, tagging instructions will pop the exec stack when tagging; otherwise, the exec stack is not popped
+global_pop_when_tagging = True # When true, tagging instructions will pop the exec stack when tagging; otherwise, the exec stack is not popped
 
 #Special defs not used by Push instructions, but still need to be globally def'ed, go here.
 global_use_bushy_code = False
