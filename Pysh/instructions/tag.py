@@ -56,7 +56,18 @@ def handle_tag_instruction(i, state):
             if globals.global_pop_when_tagging:
                 return pushstate.pop_item
             else:
-                #???
-                    
+                pass
+
+def tag_instruction_erc(types, limit):
+    '''
+    Returns a function which, when called on no arguments, returns a symbol of the form
+    tag_<type>_<number> where type is one of the specified types and number is in the range
+    from 0 to the specified limit (exclusive).
+    '''
+    def foo():
+        #Have to do random stuff first
+        pass
+    return foo
+        
     
     

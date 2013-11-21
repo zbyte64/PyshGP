@@ -6,7 +6,7 @@ Created on Oct 26, 2013
 from .. import pushstate
 
 def boolean_and(state):
-    if len(state['boolean']>1):
+    if len(state['boolean'])>1:
         ret = pushstate.stack_ref('boolean', 0, state) and pushstate.stack_ref('boolean', 1, state)
         state = pushstate.pop_item('boolean', state)
         state = pushstate.pop_item('boolean', state)
@@ -15,22 +15,24 @@ def boolean_and(state):
 pushstate.define_registered('boolean_and', boolean_and)
 
 def boolean_or(state):
-    if len(state['boolean']>1):
+    if len(state['boolean'])>1:
         ret = pushstate.stack_ref('boolean', 0, state) or pushstate.stack_ref('boolean', 1, state)
         state = pushstate.pop_item('boolean', state)
         state = pushstate.pop_item('boolean', state)
         state = pushstate.push_item(ret, 'boolean', state)
+        return state
 pushstate.define_registered('boolean_or', boolean_or)
 
 def boolean_not(state):
-    if len(state['boolean']>0):
+    if len(state['boolean'])>0:
         ret = not (pushstate.stack_ref('boolean', 0, state))
         state = pushstate.pop_item('boolean', state)
         state = pushstate.push_item(ret, 'boolean', state)
+        return state
 pushstate.define_registered('boolean_not', boolean_not)
 
 def boolean_xor(state):
-    if len(state['boolean']>1):
+    if len(state['boolean'])>1:
         b1 = pushstate.stack_ref('boolean', 0, state)
         b2 = pushstate.stack_ref('boolean', 1, state)
         state = pushstate.pop_item('boolean', state)
@@ -43,7 +45,7 @@ def boolean_xor(state):
 pushstate.define_registered('boolean_xor', boolean_xor)
 
 def boolean_invert_first_then_and(state):
-    if len(state['boolean']>1):
+    if len(state['boolean'])>1:
         ret = (not pushstate.stack_ref('boolean', 0, state)) and pushstate.stack_ref('boolean', 1, state)
         state = pushstate.pop_item('boolean', state)
         state = pushstate.pop_item('boolean', state)
@@ -52,7 +54,7 @@ def boolean_invert_first_then_and(state):
 pushstate.define_registered('boolean_invert_first_then_and', boolean_invert_first_then_and)
 
 def boolean_invert_second_then_and(state):
-    if len(state['boolean']>1):
+    if len(state['boolean'])>1:
         ret = pushstate.stack_ref('boolean', 0, state) and (not pushstate.stack_ref('boolean', 1, state))
         state = pushstate.pop_item('boolean', state)
         state = pushstate.pop_item('boolean', state)
@@ -69,6 +71,7 @@ def boolean_frominteger(state):
             ret = True
         state = pushstate.pop_item('integer', state)
         state = pushstate.push_item(ret, 'boolean', state)
+        return state
 pushstate.define_registered('boolean_frominteger', boolean_frominteger)
 
 def boolean_fromfloat(state):
@@ -80,4 +83,5 @@ def boolean_fromfloat(state):
             ret = True
         state = pushstate.pop_item('float', state)
         state = pushstate.push_item(ret, 'boolean', state)
+        return state
 pushstate.define_registered('boolean_fromfloat', boolean_fromfloat)

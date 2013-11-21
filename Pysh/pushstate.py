@@ -21,12 +21,18 @@ def register_instruction(name):
     '''
     Add the provided name to the global list of registered instructions.
     '''
-    registered_instructions.append(name)
-
+    if registered_instructions.count(name)>0:
+        print('Duplicate Push instruction defined: ' + name)
+    else:
+        registered_instructions.append(name)
+    
 instruction_table = {}
 def define_registered(instruction, definition):
     register_instruction(instruction)
     instruction_table[instruction] = definition
+    
+def get_instruction_table():
+    return instruction_table
     
 def state_pretty_print(state):
     for t in state.keys():
@@ -56,7 +62,7 @@ def stack_ref(type, position, state):
     This is a utility, not for use as an instruction in Push programs.
     NOT SAFE for invalid positions.
     '''
-    return state[type][len(state[type])-position]
+    return state[type][len(state[type])-position-1]
 
 def pop_item(type, state):
     '''
