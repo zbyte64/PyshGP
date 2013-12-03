@@ -11,6 +11,7 @@ import Pysh.instructions.boolean
 import Pysh.instructions.numbers
 import Pysh.instructions.return_pysh
 import Pysh.instructions.string
+import Pysh.util
 #In order to access complete pushstate.instruction_table, you MUST use Pysh.pushstate and not just pushstate
 
 literals = ['integer', 'float', 'string', 'boolean']
@@ -128,6 +129,7 @@ def run_push(code, state, print_steps = False, trace = False, save_state_sequenc
     The top level of the push interpreter;
     calls eval-push between appropriate code/exec pushing/popping.
     '''
+    code = Pysh.util.push_to_python(code)
     if globals.global_top_level_push_code:
         s = Pysh.pushstate.push_item(code, 'code', state)
     s = Pysh.pushstate.push_item(code, 'exec', state)

@@ -17,15 +17,27 @@ def push_to_python(pushCode):
         else:
             pyString.append(c)
     pyString = ''.join(pyString)
-    print pyString
-    
-    #Add ' ' around strings and it should work
-    
-    pyList = eval(pyString)
-    return pyList
-    
-print push_to_python('(1 (3 2 int_mult) (5 2 int_add) int_mult)')
 
+    errors = True
+    progressIndex = 0
+    while errors:
+        try: pyString = eval(pyString)
+        except NameError as detail:
+            s = str(detail)
+            start = s.index('\'')+1
+            end = s.index('\'', start+1)
+            s = s[start:end]
+            orgIndex = pyString.index(s, progressIndex)
+            progressIndex = orgIndex
+            pyString = pyString[:orgIndex] + pyString[orgIndex+len(s):]
+            s = '\'' + s + '\''
+            pyString = pyString[:orgIndex] + s + pyString[orgIndex:]
+            start += len(s)
+        else:
+            errors = False
+    #print pyString       
+    return pyString
+    
 def keep_number_reasonable(n):
     '''
     Returns a version of n that obeys limit parameters.
