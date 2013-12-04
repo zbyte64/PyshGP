@@ -4,6 +4,7 @@ Created on Nov 21, 2013
 @author: Eddie Pantidge Hampshire College 2013
 '''
 import random
+import types
 
 import globals
 
@@ -12,7 +13,7 @@ import globals
 lrand_int = random.randint
 lrand = random.uniform
 lrand_nth = random.choice
-lrand_shuffle = random.sample
+lshuffle = random.sample
 
 def decompose(number, max_parts):
     '''
@@ -33,10 +34,22 @@ def random_code_with_size(points, atom_generators):
     '''
     Returns a random expression containing the given number of points.
     '''
-    pass
+    if points < 2:
+        element = lrand_nth(atom_generators)
+        if type(element) == types.FunctionType:
+            return element()
+        else:
+            return element
+    else:
+        elements_this_level = lshuffle(decompose(points-1, points-1))
+        def foo(size):
+            return random_code_with_size(size, atom_generators)
+        for e in elements_this_level:
+            e = foo(e)
+            
 
 def random_code(max_points, atom_generators):
     '''
     Returns a random expression with size limited by max-points.
     '''
-    pass
+    return random_code_with_size(lrand_int(max_points)+1, atom_generators)
