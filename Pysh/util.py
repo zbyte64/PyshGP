@@ -5,6 +5,33 @@ Created on Oct 30, 2013
 '''
 import globals
         
+class Zipper(object):
+    def __init__(self, tree, parent = None):
+        self.leaves = []
+        self.data = None
+        self.parent = parent
+        
+        for e in tree:
+            if type(e) == list:
+                self.leaves.append(Zipper(e, self))
+            else:
+                self.leaves.append(e)
+    
+    def zipper_print(self):
+        for e in self.leaves:
+            print 'down'
+            if type(e) == Zipper:
+                e.zipper_print()
+            else:
+                print e
+            print 'up'
+            
+    def root(self):
+        if self.parent != None:
+            return self.parent.root()
+        else:
+            return self
+
 def push_to_python(pushCode):
     pyString = []
     for c in pushCode:
@@ -37,7 +64,31 @@ def push_to_python(pushCode):
             errors = False
     #print pyString       
     return pyString
-    
+
+def ensure_list(thing):
+    if type(thing) == list:
+        return thing
+    else:
+        return [thing]
+  
+def count_points(tree):
+    '''
+    Returns the number of points in tree, where each atom and each pair of parentheses counts as a point.
+    '''
+    if type(tree) == list:
+        sum = 0
+        for e in tree:
+            sum +=1
+            sum += count_points(e)
+        return sum
+
+def code_at_point(tree, point_index):
+    '''
+    Returns a subtree of tree indexed by point-index in a depth first traversal.
+    '''
+    index = abs(point_index) % count_points(tree)
+    #zipper = 
+
 def keep_number_reasonable(n):
     '''
     Returns a version of n that obeys limit parameters.

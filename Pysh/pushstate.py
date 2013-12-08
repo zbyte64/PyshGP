@@ -46,7 +46,7 @@ def push_item(value, type, state):
     Returns a copy of the state with the value pushed on the named stack. This is a utility,
     not for use in Push programs.
     '''
-    state[type].append(value)
+    state[type].insert(0,value)
     return state
 
 def top_item(type, state):
@@ -54,7 +54,11 @@ def top_item(type, state):
     Returns the top item of the type stack in state. 
     This is a utility, not for use as an instruction in Push programs.
     '''
-    return state[type][len(state[type])-1]
+    stack = state[type]
+    if len(stack)>0:
+        return stack[0]
+    else:
+        print "NO-STACK-ITEM"
     
 def stack_ref(type, position, state):
     '''
@@ -62,7 +66,11 @@ def stack_ref(type, position, state):
     This is a utility, not for use as an instruction in Push programs.
     NOT SAFE for invalid positions.
     '''
-    return state[type][len(state[type])-position-1]
+    stack = state[type]
+    if len(stack)>0:
+        return stack[position]
+    else:
+        print "NO-STACK-ITEM"
 
 def pop_item(type, state):
     '''
@@ -71,7 +79,10 @@ def pop_item(type, state):
     '''
     #for t in state.keys():
     #    print str(state[t])
-    state[type].pop()
+    try:
+        state[type] = state[type][1:]
+    except IndexError: 
+        print "POP FROM EMPTY " + type + " LIST"
     return state
 
 def end_environment(state):

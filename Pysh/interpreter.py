@@ -11,6 +11,7 @@ import Pysh.instructions.boolean
 import Pysh.instructions.numbers
 import Pysh.instructions.return_pysh
 import Pysh.instructions.string
+import Pysh.instructions.code
 import Pysh.util
 #In order to access complete pushstate.instruction_table, you MUST use Pysh.pushstate and not just pushstate
 
@@ -124,12 +125,13 @@ def eval_push(state, print_steps = False, trace = False, save_state_sequence = F
                     saved_state_sequence.append(s)
                 iteration += 1 
 
-def run_push(code, state, print_steps = False, trace = False, save_state_sequence = False):
+def run_push(code, state, print_steps = False, trace = False, save_state_sequence = False, translate_from_push_syntax = False):
     '''
     The top level of the push interpreter;
     calls eval-push between appropriate code/exec pushing/popping.
     '''
-    code = Pysh.util.push_to_python(code)
+    if translate_from_push_syntax:
+        code = Pysh.util.push_to_python(code)
     if globals.global_top_level_push_code:
         s = Pysh.pushstate.push_item(code, 'code', state)
     s = Pysh.pushstate.push_item(code, 'exec', state)
