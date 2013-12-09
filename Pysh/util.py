@@ -68,7 +68,6 @@ def push_to_python(pushCode):
     #print pyString       
     return pyString
 
-<<<<<<< HEAD
 def python_to_push(pythonCode):
     pythonCode = ''.join(pythonCode)
     print pythonCode
@@ -89,7 +88,6 @@ def python_to_push(pythonCode):
 
 python_to_push([[1, 2, 5, 100, 'integer_sub'], 'integer_add', 'integer_mult'])
     
-=======
 def ensure_list(thing):
     if type(thing) == list:
         return thing
@@ -114,7 +112,6 @@ def code_at_point(tree, point_index):
     index = abs(point_index) % count_points(tree)
     #zipper = 
 
->>>>>>> 345160a63ece9a8b13aa6e174e4150cd32399162
 def keep_number_reasonable(n):
     '''
     Returns a version of n that obeys limit parameters.
