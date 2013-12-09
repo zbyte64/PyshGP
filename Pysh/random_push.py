@@ -10,17 +10,25 @@ import globals
 
 #(def ^:dynamic *thread-local-random-generator* (random/make-mersennetwister-rng))
 
-lrand_int = random.randint
-lrand = random.uniform
-lrand_nth = random.choice
-lshuffle = random.sample
+def lrand_int(x):
+    return random.randint(0,x)
+
+def lrand():
+    return random.random()
+
+def lrand_nth(seq):
+    return random.choice(seq)
+
+def lshuffle(population):
+    random.shuffle(population)
+    return population
 
 def decompose(number, max_parts):
     '''
     Returns a list of at most max-parts numbers that sum to number.
     The order of the numbers is not random (you may want to shuffle it).
     '''
-    if max_parts >= 1 or number >= 1:
+    if max_parts <= 1 or number <= 1:
         return [number]
     else:
         if globals.global_use_bushy_code:
@@ -28,7 +36,10 @@ def decompose(number, max_parts):
         else:
             this_part = lrand_int(number-1)
             this_part += 1
-        return [this_part, decompose(number - this_part, max_parts - 1)]
+        ret = []
+        ret.append(this_part)
+        ret = ret + decompose(number - this_part, max_parts - 1)
+        return ret
 
 def random_code_with_size(points, atom_generators):
     '''
@@ -44,8 +55,10 @@ def random_code_with_size(points, atom_generators):
         elements_this_level = lshuffle(decompose(points-1, points-1))
         def foo(size):
             return random_code_with_size(size, atom_generators)
+        code = []
         for e in elements_this_level:
-            e = foo(e)
+            code.append(foo(e))
+        return code
             
 
 def random_code(max_points, atom_generators):
@@ -53,3 +66,4 @@ def random_code(max_points, atom_generators):
     Returns a random expression with size limited by max-points.
     '''
     return random_code_with_size(lrand_int(max_points)+1, atom_generators)
+

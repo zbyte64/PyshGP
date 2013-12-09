@@ -3,6 +3,8 @@ Created on Oct 29, 2013
 
 @author: Eddie Pantridge Hampshire College
 '''
+import math
+
 from .. import pushstate
 from .. import util
 
@@ -18,7 +20,7 @@ def adder(type):
             state = pushstate.pop_item(type, state)
             state = pushstate.push_item(ret, type, state)
             print("THIS SHOULD HIT!")
-            return state
+        return state
     return add
 pushstate.define_registered('integer_add', adder('integer'))
 pushstate.define_registered('float_add', adder('float'))
@@ -34,7 +36,7 @@ def subtracter(type):
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
             state = pushstate.push_item(ret, type, state)
-            return state
+        return state
     return sub
 pushstate.define_registered('integer_sub', subtracter('integer'))
 pushstate.define_registered('float_sub', subtracter('float'))
@@ -50,7 +52,7 @@ def multiplier(type):
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
             state = pushstate.push_item(ret, type, state)
-            return state
+        return state
     return mult
 pushstate.define_registered('integer_mult', multiplier('integer'))
 pushstate.define_registered('float_mult', multiplier('float'))
@@ -68,7 +70,7 @@ def divider(type):
                 state = pushstate.pop_item(type, state)
                 state = pushstate.pop_item(type, state)
                 state = pushstate.push_item(ret, type, state)
-                return state
+        return state
     return div
 pushstate.define_registered('integer_div', divider('integer'))
 pushstate.define_registered('float_div', divider('float'))
@@ -85,7 +87,7 @@ def modder(type):
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
             state = pushstate.push_item(ret, type, state)
-            return state
+        return state
     return mod
 pushstate.define_registered('integer_mod', modder('integer'))
 pushstate.define_registered('float_mod', modder('float'))
@@ -101,7 +103,7 @@ def lessthaner(type):
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
             state = pushstate.push_item(ret, 'boolean', state)
-            return state
+        return state
     return lt
 pushstate.define_registered('integer_lt', lessthaner('integer'))
 pushstate.define_registered('float_lt', lessthaner('float'))
@@ -117,7 +119,7 @@ def greaterthaner(type):
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
             state = pushstate.push_item(ret, 'boolean', state)
-            return state
+        return state
     return gt
 pushstate.define_registered('integer_gt', greaterthaner('integer'))
 pushstate.define_registered('float_gt', greaterthaner('float'))
@@ -131,7 +133,7 @@ def integer_fromboolean(state):
             ret = 0
         state = pushstate.pop_item('boolean', state)
         state = pushstate.push_item(ret, 'integer', state)
-        return state
+    return state
 pushstate.define_registered('integer_fromboolean', integer_fromboolean)
 
 def float_fromboolean(state):
@@ -143,7 +145,7 @@ def float_fromboolean(state):
             ret = 0.0
         state = pushstate.pop_item('boolean', state)
         state = pushstate.push_item(ret, 'float', state)
-        return state
+    return state
 pushstate.define_registered('float_fromboolean', float_fromboolean)
 
 def integer_fromfloat(state):
@@ -152,16 +154,16 @@ def integer_fromfloat(state):
         ret = int(ret)
         state = pushstate.pop_item('float', state)
         state = pushstate.push_item(ret, 'integer', state)
-        return state
+    return state
 pushstate.define_registered('integer_fromfloat', integer_fromfloat)
 
 def float_frominteger(state):
-    if len(state['float'])>0:
+    if len(state['integer'])>0:
         ret = pushstate.stack_ref('integer', 0, state)
         ret = int(ret)
         state = pushstate.pop_item('integer', state)
         state = pushstate.push_item(ret, 'float', state)
-        return state
+    return state
 pushstate.define_registered('float_frominteger', float_frominteger)
 
 def minner(type):
@@ -169,7 +171,7 @@ def minner(type):
     Returns a function that pushes the minimum of the top two items.
     '''
     def min(state):
-        if len(state[type])>0:
+        if len(state[type])>1:
             num1 = pushstate.stack_ref(type, 0, state)
             num2 = pushstate.stack_ref(type, 1, state)
             state = pushstate.pop_item(type, state)
@@ -178,7 +180,7 @@ def minner(type):
                 state = pushstate.push_item(num2, type, state)
             else:
                 state = pushstate.push_item(num1, type, state)
-            return state
+        return state
     return min
 pushstate.define_registered('integer_min', minner('integer'))
 pushstate.define_registered('float_min', minner('float'))
@@ -188,7 +190,7 @@ def maxer(type):
     Returns a function that pushes the maximum of the top two items.
     '''
     def max(state):
-        if len(state[type])>0:
+        if len(state[type])>1:
             num1 = pushstate.stack_ref(type, 0, state)
             num2 = pushstate.stack_ref(type, 1, state)
             state = pushstate.pop_item(type, state)
@@ -197,10 +199,41 @@ def maxer(type):
                 state = pushstate.push_item(num1, type, state)
             else:
                 state = pushstate.push_item(num2, type, state)
-            return state
+        return state
     return max
 pushstate.define_registered('integer_max', maxer('integer'))
 pushstate.define_registered('float_max', maxer('float'))
 
 #what exactly does the Sin, Cos, and Tanget functions do?
 #Will be added later
+
+
+def float_sin(state):
+    if len(state['float'])>0:
+        ret = pushstate.stack_ref('float', 0, state)
+        ret = math.sin(ret)
+        ret = util.keep_number_reasonable(ret)
+        state = pushstate.pop_item('integer', state)
+        state = pushstate.push_item(ret, 'float', state)
+    return state
+pushstate.define_registered('float_sin', float_sin)
+
+def float_cos(state):
+    if len(state['float'])>0:
+        ret = pushstate.stack_ref('float', 0, state)
+        ret = math.cos(ret)
+        ret = util.keep_number_reasonable(ret)
+        state = pushstate.pop_item('integer', state)
+        state = pushstate.push_item(ret, 'float', state)
+    return state
+pushstate.define_registered('float_cos', float_cos)
+
+def float_tan(state):
+    if len(state['float'])>0:
+        ret = pushstate.stack_ref('float', 0, state)
+        ret = math.tan(ret)
+        ret = util.keep_number_reasonable(ret)
+        state = pushstate.pop_item('integer', state)
+        state = pushstate.push_item(ret, 'float', state)
+    return state
+pushstate.define_registered('float_tan', float_tan)
