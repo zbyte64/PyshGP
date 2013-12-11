@@ -95,7 +95,7 @@ def eval_push(state, print_steps = False, trace = False, save_state_sequence = F
                 if type(exec_top) == type([]):
                     print("exec_top was a list!")
                     for i in range(len(exec_top)):
-                        s['exec'].append(exec_top[len(exec_top)-i-1])
+                        s['exec'].insert(0, exec_top[len(exec_top)-i-1])
                 else:
                     execution_result = execute_instruction(exec_top, s)
                     if trace == False:

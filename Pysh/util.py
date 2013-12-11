@@ -4,33 +4,6 @@ Created on Oct 30, 2013
 @author: Eddie Pantridge Hampshire College
 '''
 import globals
-        
-class Zipper(object):
-    def __init__(self, tree, parent = None):
-        self.leaves = []
-        self.data = None
-        self.parent = parent
-        
-        for e in tree:
-            if type(e) == list:
-                self.leaves.append(Zipper(e, self))
-            else:
-                self.leaves.append(e)
-    
-    def zipper_print(self):
-        for e in self.leaves:
-            print 'down'
-            if type(e) == Zipper:
-                e.zipper_print()
-            else:
-                print e
-            print 'up'
-            
-    def root(self):
-        if self.parent != None:
-            return self.parent.root()
-        else:
-            return self
 
 def push_to_python(pushCode):
     pyString = []
@@ -78,17 +51,70 @@ def count_points(tree):
     if type(tree) == list:
         sum = 0
         for e in tree:
-            sum +=1
             sum += count_points(e)
         return sum
+    else:
+        return 1
 
-def code_at_point(tree, point_index):
-    '''
-    Returns a subtree of tree indexed by point-index in a depth first traversal.
-    '''
+'''def code_at_point(tree, point_index):
+    
+    #Returns a subtree of tree indexed by point-index in a depth first traversal.
+    
     index = abs(point_index) % count_points(tree)
-    #zipper = 
+'''    #zipper = 
 
+def subst(this, that, the_list):
+    '''
+    Returns the given list but with all instances of that (at any depth)
+    replaced with this. Read as 'subst this for that in list'. 
+    '''
+    ret = []
+    for e in the_list:
+        if e == that:
+            ret.append(this)
+        elif type(e) is list:
+            ret.append(subst(this, that, e))
+        else:
+            ret.append(e)
+    return ret
+
+def contains_subtree(tree, subtree):
+    '''
+    Returns true if tree contains subtree at any level.
+    '''
+    if type(tree) != list:
+        return None
+    elif len(tree) == 0:
+        return None
+    elif subtree in tree:
+        return tree
+    else:
+        ret = []
+        for e in tree:
+            ret.append(contains_subtree(e, subtree))
+        ret = filter(lambda x: x is not None, ret)
+        return len(ret)>0
+    
+def containing_subtree(tree, subtree):
+    '''
+    If tree contains subtree at any level then this returns the smallest
+    subtree of tree that contains but is not equal to the first instance of
+    subtree. For example, (contining-subtree '(b (c (a)) (d (a))) '(a)) => (c (a)).
+    Returns nil if tree does not contain subtree.
+    '''
+    if type(tree) != list:
+        return None
+    elif len(tree) == 0:
+        return None
+    elif subtree in tree:
+        return tree
+    else:
+        ret = []
+        for e in tree:
+            ret.append(contains_subtree(e, subtree))
+        ret = filter(lambda x: x is not None, ret)
+        return ret[0]
+    
 def keep_number_reasonable(n):
     '''
     Returns a version of n that obeys limit parameters.

@@ -141,7 +141,10 @@ def code_map(state):
         part3 = []
         for item in util.ensure_list(state['code'][:1]):
             part3.append('code_cons')
-        state = pushstate.push_item([part1 + 'code_wrap' + part3],
+        new_item = part1
+        new_item.append('code_wrap')
+        new_item = new_item + part3
+        state = pushstate.push_item(new_item,
                                     'exec',
                                     pushstate.pop_item('code', pushstate.pop_item('exec', state)))
     return state
@@ -208,11 +211,11 @@ def code_wrap(state):
         if util.count_points(new_item) <= globals.global_max_points:
             state = pushstate.push_item(new_item, 'code', pushstate.pop_item('code', state))
     return state
-pushstate.define_registered('code_wrape', code_wrap)
+pushstate.define_registered('code_wrap', code_wrap)
 
 def code_member(state):
     if len(state['code'])>1:
-        state = pushstate.push_item(util.ensure_list(state['code'][0]).count(state['count'][1])>0, 'boolean', pushstate.pop_item('code', pushstate.pop_item('code', state)))
+        state = pushstate.push_item(util.ensure_list(state['code'][0]).count(state['code'][1])>0, 'boolean', pushstate.pop_item('code', pushstate.pop_item('code', state)))
     return state
 pushstate.define_registered('code_member', code_member)
 
@@ -246,4 +249,87 @@ pushstate.define_registered('code_null', code_null)
 
 def code_size(state):
     if len(state['code'])>0 and len(state['integer'])>0:
-        state = pushstate.push_item(, type, state)
+        state = pushstate.push_item(util.count_points(state['code'][0]), 'integer', pushstate.pop_item('code', state))
+    return state
+pushstate.define_registered('code_size', code_size)
+        
+#Code_extract and Code_insert coming once Zipper work around is found
+
+def code_subst(state):
+    if len(state['code'])>2:
+        new_item = util.subst(pushstate.stack_ref('code', 2, state),
+                              pushstate.stack_ref('code', 1, state),
+                              pushstate.stack_ref('code', 0, state))
+        if util.count_points(new_item) <= globals.global_max_points:
+            state = pushstate.push_item(new_item, 'code', pushstate.pop_item('code', pushstate.pop_item('code', pushstate.pop_item('code', state))))
+    return state
+pushstate.define_registered('code_subst', code_subst)
+
+def code_contains(state):
+    if len(state['code'])>1:
+        state = pushstate.push_item(util.contains_subtree(pushstate.stack_ref('code', 1, state),
+                                                          pushstate.stack_ref('code', 0, state)), 
+                                    'boolean',
+                                    pushstate.pop_item('code', pushstate.pop_item('code', state)))
+    return state
+pushstate.define_registered('code_contains', code_contains)
+
+def code_container(state):
+    if len(state['code'])>1:
+        state = pushstate.push_item(util.containing_subtree(pushstate.stack_ref('code', 1, state),
+                                                          pushstate.stack_ref('code', 0, state)), 
+                                    'code',
+                                    pushstate.pop_item('code', pushstate.pop_item('code', state)))
+    return state
+pushstate.define_registered('code_container', code_container)
+
+def positions(pred, coll):
+    '''
+    Returns a list containing the positions at which pred
+    is true for items in coll.
+    '''
+    indexes = []
+    for i in range(len(coll)):
+        if pred == coll[i]:
+            indexes.append(i)
+    return indexes
+
+def code_position(state):
+    if len(state['code'])>1:
+        new_item = positions([pushstate.stack_ref('code', 1, state)],
+                             util.ensure_list(pushstate.stack_ref('code', 0, state)))[0]
+        if new_item == None:
+            new_item = -1
+        state = pushstate.push_item(new_item, 'integer', pushstate.pop_item('code', pushstate.pop_item('code', state)))
+    return state
+pushstate.define_registered('code_position', code_position)
+
+def exec_k(state):
+    if len(state['exec'])>1:
+        state= pushstate.push_item(state['exec'][0], 'exec', pushstate.pop_item('exec', pushstate.pop_item('exec', state)))
+    return state
+pushstate.define_registered('exec_k', exec_k)
+
+def exec_s(state):
+    if len(state['exec'])>2:
+        stk = state['exec']
+        x = stk[0]
+        y = stk[1]
+        z = stk[2]
+        if util.count_points([y, z])<= globals.global_max_points:
+            state= pushstate.push_item(x, 'exec',
+                                       pushstate.push_item(z, 'exec',
+                                                           pushstate.push_item([y, z], 'exec',
+                                                                                pushstate.pop_item('exec',
+                                                                                                   pushstate.pop_item('exec',
+                                                                                                                      pushstate.pop_item('exec', state))))))
+    return state
+pushstate.define_registered('exec_s', exec_s)
+
+def exec_y(state):
+    if len(state['exec'])>0:
+        new_item = ['exec_y', state['exec'][0]]
+        if util.count_points(new_item) <= globals.global_max_points:
+            state = pushstate.push_item(state['exec'][0], 'exec', pushstate.push_item(new_item, 'exec', pushstate.pop_item('exec', state)))
+    return state
+pushstate.define_registered('exec_y', exec_y)

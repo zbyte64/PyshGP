@@ -20,7 +20,7 @@ print('FINAL:')
 print('======')
 pushstate.state_pretty_print(final_state)
 '''
-
+#'''
 # Testing Code Generation #
 ###########################
 import random_push
@@ -40,3 +40,4 @@ print
 
 starting_state = Pysh.pushstate.make_push_state()
 final_state = interpreter.run_push(random_code, starting_state, True, True, True, False)
+#'''
