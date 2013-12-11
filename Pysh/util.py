@@ -6,6 +6,9 @@ Created on Oct 30, 2013
 import globals
 
 def push_to_python(pushCode):
+    '''
+    takes push code and makes it more python-like for the Pysh interpreter
+    '''
     pyString = []
     for c in pushCode:
         if c == '(':
@@ -38,6 +41,26 @@ def push_to_python(pushCode):
     #print pyString       
     return pyString
 
+def python_to_push(pythonCode):
+    pythonCode = ''.join(pythonCode)
+    print pythonCode
+    print
+    pushString = []
+    for c in pythonCode:
+        if c == '[':
+            pushString.append('(')
+        elif c == ']':
+            pushString.append(')')
+        elif c == '\'':
+            pass
+        else:
+            pushString.append(c)
+    
+    pushString = ''.join(pushString)
+    return pushString
+
+python_to_push([[1, 2, 5, 100, 'integer_sub'], 'integer_add', 'integer_mult'])
+    
 def ensure_list(thing):
     if type(thing) == list:
         return thing
