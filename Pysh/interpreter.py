@@ -12,6 +12,7 @@ import Pysh.instructions.numbers
 import Pysh.instructions.return_pysh
 import Pysh.instructions.string
 import Pysh.instructions.code
+import Pysh.instructions.random_instructions
 import Pysh.util
 #In order to access complete pushstate.instruction_table, you MUST use Pysh.pushstate and not just pushstate
 

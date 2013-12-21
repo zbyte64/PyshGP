@@ -51,7 +51,7 @@ def string_atoi(state):
                 ret = '{1}'.format(s1, int(result))
                 state = pushstate.push_item(ret, 'integer', state)
     return state
-pushstate.define_registered('string_atoi', string_length)
+pushstate.define_registered('string_atoi', string_atoi)
 
 def string_reverse(state):
     if len(state['string'])>0:
@@ -69,8 +69,8 @@ def string_parse_to_chars(state):
     if len(state['string'])>0:
         s1 = pushstate.stack_ref('string', 0, state)
         state = pushstate.pop_item('string', state)
-        for i in range(len(s1-1)):
-            state = pushstate.push_item(s1[len(s1)-i:], 'string', state)
+        for i in range(len(s1)):
+            state = pushstate.push_item(s1[len(s1)-i-1:len(s1)-i], 'string', state)
     return state
 pushstate.define_registered('string_parse_to_chars', string_parse_to_chars)
 

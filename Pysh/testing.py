@@ -4,12 +4,14 @@ Created on Oct 26, 2013
 @author: Eddie
 '''
 
-'''
+#'''
 # Testing Interpreter 1 #
 #########################
+
 import interpreter
 import pushstate
 
+'''
 starting_state = pushstate.make_push_state()
 
 starting_code = '(1 (3 2 integer_mult) (5 2 integer_add) integer_mult)'
@@ -41,3 +43,9 @@ print
 starting_state = Pysh.pushstate.make_push_state()
 final_state = interpreter.run_push(random_code, starting_state, True, True, True, False)
 #'''
+'''
+starting_state = pushstate.make_push_state()
+
+starting_code = '("Hello World" string_contained)'
+final_state = interpreter.run_push(starting_code, starting_state, True, True, True, True)
+'''

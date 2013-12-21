@@ -9,13 +9,17 @@ def push_to_python(pushCode):
     '''
     takes push code and makes it more python-like for the Pysh interpreter
     '''
+    inString = False
     pyString = []
     for c in pushCode:
-        if c == '(':
+        if c == '\"':
+            inString = not inString
+            pyString.append('\"')
+        elif c == '(':
             pyString.append('[')
         elif c == ')':
             pyString.append(']')
-        elif c == ' ':
+        elif c == ' ' and not inString:
             pyString.append(', ')
         else:
             pyString.append(c)
@@ -24,22 +28,30 @@ def push_to_python(pushCode):
     errors = True
     progressIndex = 0
     while errors:
-        try: pyString = eval(pyString)
+        try: pyCode = eval(pyString)
         except NameError as detail:
             s = str(detail)
             start = s.index('\'')+1
             end = s.index('\'', start+1)
             s = s[start:end]
-            orgIndex = pyString.index(s, progressIndex)
-            progressIndex = orgIndex
-            pyString = pyString[:orgIndex] + pyString[orgIndex+len(s):]
-            s = '\'' + s + '\''
-            pyString = pyString[:orgIndex] + s + pyString[orgIndex:]
-            start += len(s)
+            if s == 'true':
+                i = pyString.index(s)
+                pyString = pyString[:i] + 'True' + pyString[i+4:]
+            elif s == 'false':
+                i = pyString.index(s)
+                pyString = pyString[:i] + 'False' + pyString[i+5:]
+            else:
+                orgIndex = pyString.index(s, progressIndex)
+                progressIndex = orgIndex
+                pyString = pyString[:orgIndex] + pyString[orgIndex+len(s):]
+                s = '\'' + s + '\''
+                pyString = pyString[:orgIndex] + s + pyString[orgIndex:]
+                start += len(s)
         else:
-            errors = False
-    #print pyString       
-    return pyString
+            errors = False      
+    return pyCode
+print(push_to_python('(1 2 true integer_add)'))
+
 
 def python_to_push(pythonCode):
     pythonCode = ''.join(pythonCode)
@@ -58,8 +70,6 @@ def python_to_push(pythonCode):
     
     pushString = ''.join(pushString)
     return pushString
-
-python_to_push([[1, 2, 5, 100, 'integer_sub'], 'integer_add', 'integer_mult'])
     
 def ensure_list(thing):
     if type(thing) == list:

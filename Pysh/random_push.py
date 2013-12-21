@@ -11,10 +11,10 @@ import globals
 #(def ^:dynamic *thread-local-random-generator* (random/make-mersennetwister-rng))
 
 def lrand_int(x):
-    return random.randint(0,x)
+    return random.randint(1,x)-1
 
-def lrand():
-    return random.random()
+def lrand(x=1):
+    return random.uniform(0, x)
 
 def lrand_nth(seq):
     return random.choice(seq)
