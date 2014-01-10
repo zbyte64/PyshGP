@@ -9,18 +9,18 @@ from .. import random_push
 from .. import individual
 from .. import evaluate
 
-import Pysh.pushstate
-import Pysh.instructions.boolean
-import Pysh.instructions.numbers
-import Pysh.instructions.return_pysh
-import Pysh.instructions.string
-import Pysh.instructions.code
-import Pysh.instructions.random_instructions
-import Pysh.instructions.common
+import Pysh.pushgp
+import Pysh.pushgp
+import Pysh.pushgp
+import Pysh.pushgp
+import Pysh.pushgp
+import Pysh.pushgp
+import Pysh.pushgp
+import Pysh.pushgp
 
-import breed
-import parent_selection
-import report
+from Pysh import pushgp
+from Pysh import pushgp
+from Pysh import pushgp
 
 def rand1():
     return random_push.lrand_int(100)
@@ -87,15 +87,15 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'top-level-push-code' : True, # When True, run-push will push the program's code onto the code stack prior to running
             'top-level-pop-code' : True, # When True, run-push will pop the code stack after running the program
             #ARGUMENTS RELATED TO GENERATIONAL AND FINAL REPORTS
-            'report-simplifications' : 100, # The number of simplification steps that will happen during report simplifications
-            'final-report-simplifications' : 1000, # The number of simplification steps that will happen during final report simplifications
-            'problem-specific-report' : 'default-problem-specific-report', # A function can be called to provide a problem-specific report, which happens after the normal generational report is printed
+            'pushgp-simplifications' : 100, # The number of simplification steps that will happen during pushgp simplifications
+            'final-pushgp-simplifications' : 1000, # The number of simplification steps that will happen during final pushgp simplifications
+            'problem-specific-pushgp' : 'default-problem-specific-pushgp', # A function can be called to provide a problem-specific pushgp, which happens after the normal generational pushgp is printed
             'print-errors' : True, # When True, prints the error vector of the best individual
             'print-history' : False, # When True, prints the history of the best individual's ancestors' total errors
-            'print-timings' : False, # If True, report prints how long different parts of evolution have taken during the current run.
-            'print-cosmos-data' : False, # If True, report prints COSMOS data each generation.
+            'print-timings' : False, # If True, pushgp prints how long different parts of evolution have taken during the current run.
+            'print-cosmos-data' : False, # If True, pushgp prints COSMOS data each generation.
             'maintain-ancestors' : False, # If True, save all ancestors in each individual (costly)
-            'print-ancestors-of-solution' : False, # If True, final report prints the ancestors of the solution. Requires 'maintain-ancestors to be True.
+            'print-ancestors-of-solution' : False, # If True, final pushgp prints the ancestors of the solution. Requires 'maintain-ancestors to be True.
             #ARGUMENTS RELATED TO PRINTING JSON OR CSV LOGS
             'print-csv-logs' : False, # Prints a CSV log of the population each generation
             'print-json-logs' : False, # Prints a JSON log of the population each generation

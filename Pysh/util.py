@@ -4,6 +4,8 @@ Created on Oct 30, 2013
 @author: Eddie Pantridge Hampshire College
 '''
 import globals
+import collections
+import pysh_tree
 
 def push_to_python(pushCode):
     '''
@@ -50,7 +52,7 @@ def push_to_python(pushCode):
         else:
             errors = False      
     return pyCode
-print(push_to_python('(1 2 true integer_add)'))
+#print(push_to_python('(1 2 true integer_add)'))
 
 
 def python_to_push(pythonCode):
@@ -89,13 +91,78 @@ def count_points(tree):
     else:
         return 1
 
-'''def code_at_point(tree, point_index):
-    
-    #Returns a subtree of tree indexed by point-index in a depth first traversal.
-    
-    index = abs(point_index) % count_points(tree)
-'''    #zipper = 
+def code_at_point(tree, point_index):
+    '''
+    Returns a subtree of tree indexed by point-index in a depth first traversal.
+    '''
+    t = pysh_tree.PyshTreeNode()
+    t.loadFromList(tree)
+    cn = t
+    for i in range(point_index):
+        if len(cn.children)>0:
+            cn = cn.traverse('down', 0)
+        elif len(cn.parent.children)>cn.parent.children.index(cn)+1:
+            cn = cn.traverse('right')
+        else:
+            while len(cn.parent.children)==cn.parent.children.index(cn)+1 and cn.parent != None:
+                cn = cn.traverse('up')
+            cn = cn.traverse('right')
+    return cn.toList()
 
+def insert_code_at_point(tree, point_index, new_subtree):
+    '''
+    Returns a copy of tree with the subtree formerly indexed by
+    point-index (in a depth-first traversal) replaced by new-subtree.
+    '''
+    t = pysh_tree.PyshTreeNode()
+    t.loadFromList(tree)
+    cn = t
+    for i in range(point_index):
+        if len(cn.children)>0:
+            cn = cn.traverse('down', 0)
+        elif len(cn.parent.children)>cn.parent.children.index(cn)+1:
+            cn = cn.traverse('right')
+        else:
+            while len(cn.parent.children)==cn.parent.children.index(cn)+1 and cn.parent != None:
+                cn = cn.traverse('up')
+            cn = cn.traverse('right')
+    temp = cn.parent
+    temp.children[temp.children.index(cn)] = new_subtree
+    while temp.parent != None:
+        temp = temp.traverse('up')
+    if len(temp.toList()) > 0:
+        return temp.toList()
+    else:
+        return tree        
+    
+def remove_code_at_point(tree, point_index):
+    '''
+    Returns a copy of tree with the subtree formerly indexed by
+    point-index (in a depth-first traversal) removed. If removal would
+    result in an empty list then it is not performed. (NOTE: this is different
+    from the behavior in other implementations of Push.)
+    '''
+    t = pysh_tree.PyshTreeNode()
+    t.loadFromList(tree)
+    cn = t
+    for i in range(point_index):
+        if len(cn.children)>0:
+            cn = cn.traverse('down', 0)
+        elif len(cn.parent.children)>cn.parent.children.index(cn)+1:
+            cn = cn.traverse('right')
+        else:
+            while len(cn.parent.children)==cn.parent.children.index(cn)+1 and cn.parent != None:
+                cn = cn.traverse('up')
+            cn = cn.traverse('right')
+    temp = cn.parent
+    temp.children.remove(cn)
+    while temp.parent != None:
+        temp = temp.traverse('up')
+    if len(temp.toList()) > 0:
+        return temp.toList()
+    else:
+        return tree
+    
 def subst(this, that, the_list):
     '''
     Returns the given list but with all instances of that (at any depth)
@@ -157,3 +224,36 @@ def keep_number_reasonable(n):
     elif n < -globals.max_number_magnitude:
         n = -globals.max_number_magnitude
     return n
+
+def all_items(lst):
+    '''
+    Returns a list of all of the items in lst, where sublists and atoms all
+    count as items. Will contain duplicates if there are duplicates in lst.
+    '''
+    ret = []
+    for e in lst:
+        if type(e) == list:
+            ret += all_items(e)
+        else:
+            ret.append(e)
+    return ret
+
+def walklist(inner, outer, form):
+    '''
+    Like walk, but only for lists.
+    '''
+    if type(form) == list:
+        newList = []
+        for e in form:
+            newList.append(inner(e))
+        return outer(newList)
+    else:
+        return outer(form)
+
+#def postwalklist(f, form):
+    '''
+    Like postwalk, but only for lists.
+    REPLACED BY pysh_tree
+    '''
+            
+    

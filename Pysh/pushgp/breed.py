@@ -8,3 +8,6 @@ from .. import random_push
 from .. import simplification
 import parent_selection
 import genetic_operators
+
+def breed(agt, location, rand_gen, population):
+    
