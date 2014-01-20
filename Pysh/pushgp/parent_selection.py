@@ -45,4 +45,20 @@ def retain_one_induvidual_per_error_vector(pop):
     Retains one random individual to represent each error vector.
     '''
     pass
+
+####################################################################
+#Parent Selection
+####################################################################
+def select(pop, location, keys):
+    argmap = {'use_lexicase_selection' : keys[0],
+              'use_elitegroup_lexicase_selection' : keys[1]}
+    if argmap('use_lexicase_selection'):
+        pass
+        #return lexicase_selection(pop, location, argmap)
+    elif argmap('use_elitegroup_lexicase_selection'):
+        #return elitegroup_lexicase_selection(pop)
+        pass
+    else:
+        return tournament_selection(pop, location, argmap)
+        
     
