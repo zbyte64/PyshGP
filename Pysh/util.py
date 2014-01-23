@@ -72,11 +72,6 @@ def python_to_push(pythonCode):
     
     pushString = ''.join(pushString)
     return pushString
-<<<<<<< HEAD
-
-#python_to_push([[1, 2, 5, 100, 'integer_sub'], 'integer_add', 'integer_mult'])
-=======
->>>>>>> 9be3d4f10f753d038481cd2d4e7f8db52c21d21a
     
 def ensure_list(thing):
     if type(thing) == list:
