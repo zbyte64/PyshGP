@@ -59,7 +59,7 @@ def python_to_push(pythonCode):
     pushString = ''.join(pushString)
     return pushString
 
-python_to_push([[1, 2, 5, 100, 'integer_sub'], 'integer_add', 'integer_mult'])
+#python_to_push([[1, 2, 5, 100, 'integer_sub'], 'integer_add', 'integer_mult'])
     
 def ensure_list(thing):
     if type(thing) == list:
