@@ -29,7 +29,7 @@ elitegroups = []
 #The globals below may be reset by arguments to pushgp
 
 ### These definitions are used by Push instructions and therefore must be global
-#??????? global_atom_generators # The instructions and literals that may be used in Push programs. ??????? 
+global_atom_generators = [] # The instructions and literals that may be used in Push programs. ??????? 
 global_max_points = 100 # The maximum size of a Push program. Also, the maximum size of code that can appear on the exec or code stacks.
 global_tag_limit = 10000 # The size of the tag space
 

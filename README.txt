@@ -24,3 +24,10 @@ Developed using the Pydev plugin for eclipse.
 
 Eddie Pantridge
 Hampshire College 2013
+
+
+
+========================================
+Things that need answering:
+
+Should the trig functions use degrees or radians?

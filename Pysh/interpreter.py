@@ -7,14 +7,19 @@ import Pysh.pushstate
 import globals
 import time
 
+#calling these imports is only so define_registered will be called for every instruction
 import Pysh.instructions.boolean
 import Pysh.instructions.numbers
 import Pysh.instructions.return_pysh
 import Pysh.instructions.string
 import Pysh.instructions.code
-import Pysh.util
-#In order to access complete pushstate.instruction_table, you MUST use Pysh.pushstate and not just pushstate
+import Pysh.instructions.random_instructions
+import Pysh.instructions.common
 
+import Pysh.util
+#####
+#In order to access complete pushstate.instruction_table, you MUST use Pysh.pushstate and not just pushstate
+#####
 literals = ['integer', 'float', 'string', 'boolean']
 def recognize_literal(thing):
     '''

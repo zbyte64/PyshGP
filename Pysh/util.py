@@ -4,18 +4,24 @@ Created on Oct 30, 2013
 @author: Eddie Pantridge Hampshire College
 '''
 import globals
+import collections
+import pysh_tree
 
 def push_to_python(pushCode):
     '''
     takes push code and makes it more python-like for the Pysh interpreter
     '''
+    inString = False
     pyString = []
     for c in pushCode:
-        if c == '(':
+        if c == '\"':
+            inString = not inString
+            pyString.append('\"')
+        elif c == '(':
             pyString.append('[')
         elif c == ')':
             pyString.append(']')
-        elif c == ' ':
+        elif c == ' ' and not inString:
             pyString.append(', ')
         else:
             pyString.append(c)
@@ -24,22 +30,30 @@ def push_to_python(pushCode):
     errors = True
     progressIndex = 0
     while errors:
-        try: pyString = eval(pyString)
+        try: pyCode = eval(pyString)
         except NameError as detail:
             s = str(detail)
             start = s.index('\'')+1
             end = s.index('\'', start+1)
             s = s[start:end]
-            orgIndex = pyString.index(s, progressIndex)
-            progressIndex = orgIndex
-            pyString = pyString[:orgIndex] + pyString[orgIndex+len(s):]
-            s = '\'' + s + '\''
-            pyString = pyString[:orgIndex] + s + pyString[orgIndex:]
-            start += len(s)
+            if s == 'true':
+                i = pyString.index(s)
+                pyString = pyString[:i] + 'True' + pyString[i+4:]
+            elif s == 'false':
+                i = pyString.index(s)
+                pyString = pyString[:i] + 'False' + pyString[i+5:]
+            else:
+                orgIndex = pyString.index(s, progressIndex)
+                progressIndex = orgIndex
+                pyString = pyString[:orgIndex] + pyString[orgIndex+len(s):]
+                s = '\'' + s + '\''
+                pyString = pyString[:orgIndex] + s + pyString[orgIndex:]
+                start += len(s)
         else:
-            errors = False
-    #print pyString       
-    return pyString
+            errors = False      
+    return pyCode
+#print(push_to_python('(1 2 true integer_add)'))
+
 
 def python_to_push(pythonCode):
     pythonCode = ''.join(pythonCode)
@@ -58,8 +72,11 @@ def python_to_push(pythonCode):
     
     pushString = ''.join(pushString)
     return pushString
+<<<<<<< HEAD
 
 #python_to_push([[1, 2, 5, 100, 'integer_sub'], 'integer_add', 'integer_mult'])
+=======
+>>>>>>> 9be3d4f10f753d038481cd2d4e7f8db52c21d21a
     
 def ensure_list(thing):
     if type(thing) == list:
@@ -79,13 +96,78 @@ def count_points(tree):
     else:
         return 1
 
-'''def code_at_point(tree, point_index):
-    
-    #Returns a subtree of tree indexed by point-index in a depth first traversal.
-    
-    index = abs(point_index) % count_points(tree)
-'''    #zipper = 
+def code_at_point(tree, point_index):
+    '''
+    Returns a subtree of tree indexed by point-index in a depth first traversal.
+    '''
+    t = pysh_tree.PyshTreeNode()
+    t.loadFromList(tree)
+    cn = t
+    for i in range(point_index):
+        if len(cn.children)>0:
+            cn = cn.traverse('down', 0)
+        elif len(cn.parent.children)>cn.parent.children.index(cn)+1:
+            cn = cn.traverse('right')
+        else:
+            while len(cn.parent.children)==cn.parent.children.index(cn)+1 and cn.parent != None:
+                cn = cn.traverse('up')
+            cn = cn.traverse('right')
+    return cn.toList()
 
+def insert_code_at_point(tree, point_index, new_subtree):
+    '''
+    Returns a copy of tree with the subtree formerly indexed by
+    point-index (in a depth-first traversal) replaced by new-subtree.
+    '''
+    t = pysh_tree.PyshTreeNode()
+    t.loadFromList(tree)
+    cn = t
+    for i in range(point_index):
+        if len(cn.children)>0:
+            cn = cn.traverse('down', 0)
+        elif len(cn.parent.children)>cn.parent.children.index(cn)+1:
+            cn = cn.traverse('right')
+        else:
+            while len(cn.parent.children)==cn.parent.children.index(cn)+1 and cn.parent != None:
+                cn = cn.traverse('up')
+            cn = cn.traverse('right')
+    temp = cn.parent
+    temp.children[temp.children.index(cn)] = new_subtree
+    while temp.parent != None:
+        temp = temp.traverse('up')
+    if len(temp.toList()) > 0:
+        return temp.toList()
+    else:
+        return tree        
+    
+def remove_code_at_point(tree, point_index):
+    '''
+    Returns a copy of tree with the subtree formerly indexed by
+    point-index (in a depth-first traversal) removed. If removal would
+    result in an empty list then it is not performed. (NOTE: this is different
+    from the behavior in other implementations of Push.)
+    '''
+    t = pysh_tree.PyshTreeNode()
+    t.loadFromList(tree)
+    cn = t
+    for i in range(point_index):
+        if len(cn.children)>0:
+            cn = cn.traverse('down', 0)
+        elif len(cn.parent.children)>cn.parent.children.index(cn)+1:
+            cn = cn.traverse('right')
+        else:
+            while len(cn.parent.children)==cn.parent.children.index(cn)+1 and cn.parent != None:
+                cn = cn.traverse('up')
+            cn = cn.traverse('right')
+    temp = cn.parent
+    temp.children.remove(cn)
+    while temp.parent != None:
+        temp = temp.traverse('up')
+    if len(temp.toList()) > 0:
+        return temp.toList()
+    else:
+        return tree
+    
 def subst(this, that, the_list):
     '''
     Returns the given list but with all instances of that (at any depth)
@@ -147,3 +229,36 @@ def keep_number_reasonable(n):
     elif n < -globals.max_number_magnitude:
         n = -globals.max_number_magnitude
     return n
+
+def all_items(lst):
+    '''
+    Returns a list of all of the items in lst, where sublists and atoms all
+    count as items. Will contain duplicates if there are duplicates in lst.
+    '''
+    ret = []
+    for e in lst:
+        if type(e) == list:
+            ret += all_items(e)
+        else:
+            ret.append(e)
+    return ret
+
+def walklist(inner, outer, form):
+    '''
+    Like walk, but only for lists.
+    '''
+    if type(form) == list:
+        newList = []
+        for e in form:
+            newList.append(inner(e))
+        return outer(newList)
+    else:
+        return outer(form)
+
+#def postwalklist(f, form):
+    '''
+    Like postwalk, but only for lists.
+    REPLACED BY pysh_tree
+    '''
+            
+    

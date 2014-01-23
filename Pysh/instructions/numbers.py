@@ -19,7 +19,6 @@ def adder(type):
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
             state = pushstate.push_item(ret, type, state)
-            print("THIS SHOULD HIT!")
         return state
     return add
 pushstate.define_registered('integer_add', adder('integer'))
@@ -31,7 +30,7 @@ def subtracter(type):
     '''
     def sub(state):
         if len(state[type])>1:
-            ret = pushstate.stack_ref(type, 0, state) - pushstate.stack_ref(type, 1, state)
+            ret = pushstate.stack_ref(type, 1, state) - pushstate.stack_ref(type, 0, state)
             ret = util.keep_number_reasonable(ret)
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
@@ -65,7 +64,7 @@ def divider(type):
     def div(state):
         if len(state[type])>1:
             if pushstate.stack_ref(type, 1, state) != 0:
-                ret = pushstate.stack_ref(type, 0, state) / pushstate.stack_ref(type, 1, state)
+                ret = pushstate.stack_ref(type, 1, state) / pushstate.stack_ref(type, 0, state)
                 ret = util.keep_number_reasonable(ret)
                 state = pushstate.pop_item(type, state)
                 state = pushstate.pop_item(type, state)
@@ -98,7 +97,7 @@ def lessthaner(type):
     '''
     def lt(state):
         if len(state[type])>1:
-            ret = pushstate.stack_ref(type, 0, state) < pushstate.stack_ref(type, 1, state)
+            ret = pushstate.stack_ref(type, 1, state) < pushstate.stack_ref(type, 0, state)
             ret = util.keep_number_reasonable(ret)
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
@@ -114,7 +113,7 @@ def greaterthaner(type):
     '''
     def gt(state):
         if len(state[type])>1:
-            ret = pushstate.stack_ref(type, 0, state) > pushstate.stack_ref(type, 1, state)
+            ret = pushstate.stack_ref(type, 1, state) > pushstate.stack_ref(type, 0, state)
             ret = util.keep_number_reasonable(ret)
             state = pushstate.pop_item(type, state)
             state = pushstate.pop_item(type, state)
@@ -160,7 +159,7 @@ pushstate.define_registered('integer_fromfloat', integer_fromfloat)
 def float_frominteger(state):
     if len(state['integer'])>0:
         ret = pushstate.stack_ref('integer', 0, state)
-        ret = int(ret)
+        ret = float(ret)
         state = pushstate.pop_item('integer', state)
         state = pushstate.push_item(ret, 'float', state)
     return state
@@ -213,7 +212,7 @@ def float_sin(state):
         ret = pushstate.stack_ref('float', 0, state)
         ret = math.sin(ret)
         ret = util.keep_number_reasonable(ret)
-        state = pushstate.pop_item('integer', state)
+        state = pushstate.pop_item('float', state)
         state = pushstate.push_item(ret, 'float', state)
     return state
 pushstate.define_registered('float_sin', float_sin)
@@ -223,7 +222,7 @@ def float_cos(state):
         ret = pushstate.stack_ref('float', 0, state)
         ret = math.cos(ret)
         ret = util.keep_number_reasonable(ret)
-        state = pushstate.pop_item('integer', state)
+        state = pushstate.pop_item('float', state)
         state = pushstate.push_item(ret, 'float', state)
     return state
 pushstate.define_registered('float_cos', float_cos)
@@ -233,7 +232,7 @@ def float_tan(state):
         ret = pushstate.stack_ref('float', 0, state)
         ret = math.tan(ret)
         ret = util.keep_number_reasonable(ret)
-        state = pushstate.pop_item('integer', state)
+        state = pushstate.pop_item('float', state)
         state = pushstate.push_item(ret, 'float', state)
     return state
 pushstate.define_registered('float_tan', float_tan)
