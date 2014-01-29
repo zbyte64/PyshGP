@@ -3,30 +3,22 @@ Created on Dec 21, 2013
 
 @author: Eddie Pantridge Hampshire College
 '''
-from .. import globals
-from .. import util
-from .. import random_push
-from .. import individual
-from .. import evaluate
+import Pysh.globals
+import Pysh.util
+import Pysh.random_push
+import Pysh.individual
+import Pysh.evaluate
 
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-
-from Pysh import pushgp
-from Pysh import pushgp
-from Pysh import pushgp
+import Pysh.pushgp.breed
+import Pysh.pushgp.genetic_operators
+import Pysh.pushgp.parent_selection
+import Pysh.pushgp.report
 
 def rand1():
-    return random_push.lrand_int(100)
+    return Pysh.random_push.lrand_int(100)
 
 def rand2():
-    return random_push.lrand()
+    return Pysh.random_push.lrand()
 
 push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'use-single-thread' : False, #When true, Pysh will only use a single thread
@@ -107,3 +99,10 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'parent-reversion-probability' : 0.0, # The probability of a child being reverted to its parent if the parent has better fitness or equal fitness and is smaller
             'use-bushy-code' : False, # When True, random code and code changed by ULTRA mutation, will be "bushy", as in close to a binary tree
             }
+
+def load_push_argmap(argmap):
+    for k, v in argmap.iteritems():
+        if push_argmap.has_key(k) == False:
+            raise Exception('Argument key ' + str(k) + ' is not recognized argument to pushgp.')
+        push_argmap[k] = v
+        
