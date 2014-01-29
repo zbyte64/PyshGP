@@ -13,6 +13,79 @@ import Pysh.node_selection
 import Pysh.pysh_tree
 
 #using ULTRA (Uniform Linear Transformation with Repair and Alternation) operator
+
+##### NORMAL MUTAION #####
+def mutate(ind, argmap):
+    # STARTING WITH ULTRA #
+    pass
+
+def crossover(parent1, parent2, argmap):
+    '''
+    Returns a copy of parent1 with a random subprogram replaced with a random
+    subprogram of parent2.
+    '''
+    # STARTING WITH ULTRA #
+    pass
+
+def boolean_gsxover(parent1, parent2, argmap):
+    '''
+    "Returns a child produced from parent1 and parent2 using boolean geometric
+    semantic crossover. The child will be of the form:
+    (new-random-code exec_if parent1-code parent2-code).
+    '''
+    pass
+
+def delete_mutate(ind, argmap):
+    '''
+    Returns the individual with between 1 and 4 points deleted. The points can be
+    single instructions or parenthetical pairs. The number of points is based
+    roughly on a binomial distribution with n=4 and p=0.25, moved up one so that
+    0 is never chosen. This results in the following probabilities for numbers
+    of deletions:
+    p(1) = 0.32
+    p(2) = 0.42
+    p(3) = 0.21
+    p(4) = 0.05
+    '''
+    pass
+
+def add_parentheses_mutate(ind, argmap):
+    '''
+    Returns a version of the given individual with one pair of parentheses added
+    somewhere. Not compatible with (currently 'experimental') tagged code macros.
+    '''
+    pass
+
+def tagging_mutate(ind, tag_limit, argmap):
+    '''
+    Returns a version of the given individual with a piece of code replaced by a tag
+    reference, and with an expression that tags the replaced code with the same tag added
+    to the beginning of the individual's program.
+    '''
+    pass
+
+def tag_branch_insertion_mutate(ind, tag_limit, argmap):
+    '''
+    Returns a version of the given individual with a tag-branch inserted at a random
+    location. A tag-branch is a sequence of instructions that 1) produces a boolean
+    value by performing a randomly chosen comparison of copies (not popped) of the top
+    two items of a randomly selected type, and 2) branches to one of two tags depending
+    on the result. The tag-branch-mutation-type-instruction-pairs argument should be a sequence of pairs,
+    in which the first element of each is a type and the second element is a Push instruction
+    that performs a comparison of the type, as in [:integer 'integer_eq].
+    ''' 
+    pass
+
+##### GAUSSIAN MUTAION #####
+def gaussian_mutate(ind, argmap):
+    '''
+    Returns the given individual where each float literal has a
+    gaussian-mutation-per-number-mutation-probability chance of being gaussian
+    mutated with a standard deviation of gaussian-mutation-standard-deviation.
+    ''' 
+    # STARTING WITH ULTRA #
+    pass
+
 def gaussian_noise_factor():
     '''
     Returns gaussian noise of mean 0, std dev 1.
@@ -210,5 +283,43 @@ def linearly_mutate(open_close_sequence, mutation_rate, use_ultra_no_paren_mutat
         ret.append(token_mutator(e))
     return ret
 
-def ultra_operate_on_programs(p1, p2, alternation_rate, alignment_deviation, mutation_rate, use_ultra_no_paren_mutation, ultra_pads_with_empties, atom_generators):
-    pass
+def ultra_operate_on_programs(p1, p2, alternation_rate, alignment_deviation, mutation_rate, use_ultra_no_paren_mutation, ultra_pads_with_empties, atom_generators, max_points):
+    if (type(p1) != list) or (type(p2) != list):
+        return p1
+    else:
+        if len(p1) < len(p2):
+            for i in range(len(p2)-len(p1)):
+                if ultra_pads_with_empties:
+                    p1 += []
+                else:
+                    p1 += ['ultra-padding']
+        if len(p2) < len(p1):
+            for i in range(len(p1)-len(p2)):
+                if ultra_pads_with_empties:
+                    p2 += []
+                else:
+                    p2 += ['ultra-padding']
+        if ultra_pads_with_empties:
+            temp = alternate(list_to_open_close_sequence(p1), list_to_open_close_sequence(p2), alternation_rate, alignment_deviation, max_points)
+            return remove_empties(open_close_sequence_to_list(balance(linearly_mutate(temp, mutation_rate, use_ultra_no_paren_mutation, atom_generators))))
+        else:
+            temp = alternate(list_to_open_close_sequence(p1), list_to_open_close_sequence(p2), alternation_rate, alignment_deviation, max_points)
+            return remove_ultra_padding(open_close_sequence_to_list(balance(linearly_mutate(temp, mutation_rate, use_ultra_no_paren_mutation, atom_generators))))
+            
+def ultra(parent1, parent2, argmap):
+    '''
+    Returns the result of applying the ULTRA (Uniform Linear Transformation
+    with Repair and Alternation) operation to parent1 and parent2.
+    '''
+    new_program = ultra_operate_on_programs(parent1['program'], parent2['program'], argmap['ultra-alternation-rate'],argmap['ultra-alignment-deviation'],argmap['ultra-mutation-rate'],argmap['use-ultra-no-paren-mutation'],argmap['ultra-pads-with-empties'],argmap['atom-generators'],argmap['max-points'])
+    if Pysh.util.count_points(new_program) > argmap['max_points']:
+        return parent1
+    else:
+        if argmap['maintain-ancestors']:
+            return Pysh.individual.make_induvidual(program=new_program, history=parent1['history'], ancestors = parent1['program']+parent1['ancestors'])
+        else:
+            return Pysh.individual.make_induvidual(program=new_program, history=parent1['history'], ancestors = parent1['ancestors'])
+            
+            
+            
+        
