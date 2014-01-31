@@ -8,6 +8,10 @@ import Pysh.util
 import Pysh.random_push
 import Pysh.individual
 import Pysh.evaluate
+<<<<<<< HEAD
+=======
+
+>>>>>>> 00bde482c7d01c000e3f3eab006ebe4b2e9869d2
 import Pysh.pushgp.breed
 import Pysh.pushgp.genetic_operators
 import Pysh.pushgp.parent_selection
