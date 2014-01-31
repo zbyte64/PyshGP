@@ -8,19 +8,15 @@ from .. import util
 from .. import random_push
 from .. import individual
 from .. import evaluate
-
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-import Pysh.pushgp
-
-from Pysh import pushgp
-from Pysh import pushgp
-from Pysh import pushgp
+import Pysh.globals
+import Pysh.util
+import Pysh.random_push
+import Pysh.individual
+import Pysh.evaluate
+import Pysh.pushgp.breed
+import Pysh.pushgp.genetic_operators
+import Pysh.pushgp.parent_selection
+import Pysh.pushgp.report
 
 def rand1():
     return random_push.lrand_int(100)
