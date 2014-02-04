@@ -8,7 +8,6 @@ import Pysh.util
 import Pysh.random_push
 import Pysh.individual
 import Pysh.evaluate
-
 import Pysh.pushgp.breed
 import Pysh.pushgp.genetic_operators
 import Pysh.pushgp.parent_selection
