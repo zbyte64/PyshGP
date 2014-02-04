@@ -105,4 +105,4 @@ def load_push_argmap(argmap):
         if push_argmap.has_key(k) == False:
             raise Exception('Argument key ' + str(k) + ' is not recognized argument to pushgp.')
         push_argmap[k] = v
-        
+          
