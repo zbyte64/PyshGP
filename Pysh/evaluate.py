@@ -50,7 +50,7 @@ def calculate_hah_solution_rates(use_historically_assessed_hardness, pop_agents,
     print('\nSolution rates:')
     print(globals.solution_rates)
 
-def evaluate_individual(i, error_function, rand_gen, keys = {'reuse_errors' : True, 
+def evaluate_individual(i, error_function, rand_gen, argmap = {'reuse_errors' : True, 
                                                              'print_history' : False,
                                                              'use_rmse' : False,
                                                              'use_historically_assesed_hardness' : False}):
@@ -59,23 +59,23 @@ def evaluate_individual(i, error_function, rand_gen, keys = {'reuse_errors' : Tr
     computing them if necessary.
     '''
     p = i['program']
-    if len(i['errors'])!=None and keys['reuse_errors']:
+    if len(i['errors'])!=None and argmap['reuse_errors']:
         e = i['errors']
     else:
         e = error_function(p)
-    if i['total_error']!=None and keys['reuse_errors']:
+    if i['total_error']!=None and argmap['reuse_errors']:
         te = i['total_error']
     else:
         te = compute_total_error(e)
-    if keys['use_historically_assesed_hardness']:
+    if argmap['use_historically_assesed_hardness']:
         he = compute_hah_error(e)
     else:
         he = None
-    if keys['use_rmse']:
+    if argmap['use_rmse']:
         rmse = compute_root_mean_square_error(e)
     else:
         rmse = None
-    if keys['print_history']:
+    if argmap['print_history']:
         his = te + i['history']
     else:
         his = i['history']

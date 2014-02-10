@@ -13,6 +13,9 @@ import Pysh.pushgp.genetic_operators
 import Pysh.pushgp.parent_selection
 import Pysh.pushgp.report
 
+import datetime
+import random
+
 def rand1():
     return Pysh.random_push.lrand_int(100)
 
@@ -105,3 +108,61 @@ def load_push_argmap(argmap):
             raise Exception('Argument key ' + str(k) + ' is not recognized argument to pushgp.')
         push_argmap[k] = v
         
+def reset_globals():
+    #AS PUSH ADDS MORE GLOBALS, THIS FUNCTION WILL NEED TO BE UPDATED
+    for k, v in push_argmap.iteritems():
+        if k is 'atom-generators':
+            Pysh.globals.global_atom_generators = push_argmap[k]
+        elif k is 'max-points':
+            Pysh.globals.global_max_points = push_argmap[k]
+        elif k is 'tag-limit':
+            Pysh.globals.global_tag_limit = push_argmap[k]
+        elif k is 'top-level-push-code':
+            Pysh.globals.global_top_level_push_code = push_argmap[k]
+        elif k is 'top-level-pop-code':
+            Pysh.globals.global_top_level_pop_code = push_argmap[k]
+        elif k is 'evalpush-limit':
+            Pysh.globals.global_evalpush_limit = push_argmap[k]
+        elif k is 'evalpush-time-limit':
+            Pysh.globals.global_evalpush_time_limit = push_argmap[k]
+        elif k is 'pop-when-tagging':
+            Pysh.globals.global_pop_when_tagging = push_argmap[k]
+        elif k is 'use-bushy-code':
+            Pysh.globals.global_use_bushy_code = push_argmap[k]
+            
+def make_agents_and_rng(argmap):
+    #agent_error_handler
+    #random_seeds = []
+    if argmap['initial-population']:
+        #READ POPULATION IN FROM FILE
+        print("NO READING FROM FILE YET")
+    else:
+        pa = []
+        for i in range(argmap['population_size']):
+            pa.append(Pysh.individual.make_induvidual(Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators'])))
+        f = str('data/'+str(datetime.datetime.now())+'.ser')
+        if argmap['save-initial-population']:
+            print('SORRY NO SAVING POPULATIONS YET')
+        
+        ca = []
+        for i in range(argmap['population_size']):
+            ca.append(Pysh.individual.make_induvidual())
+        
+        rs = []
+        for i in range(argmap['population_size']):
+            rs.append(random.randint(0, 9999999))
+            
+        rg = []
+        for i in range(argmap['population_size']):
+            temp = random.Random()
+            temp.seed(rs[i])
+            ca.append(temp)
+    
+    return {'pop-agents':pa, 'child-agents':ca, 'random-seeds':rs, 'rand-gens':rg}
+        
+def compute_errors(pop_agents, rand_gens, argmap):
+    errors = []
+    for i in range(len(pop_agents)):
+        errors.append(Pysh.evaluate.evaluate_individual(pop_agents[i], argmap['error_function'], rand_gens[i], argmap))
+    return errors
+    
