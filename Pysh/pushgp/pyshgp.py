@@ -107,6 +107,7 @@ def load_push_argmap(argmap):
         if push_argmap.has_key(k) == False:
             raise Exception('Argument key ' + str(k) + ' is not recognized argument to pushgp.')
         push_argmap[k] = v
+<<<<<<< HEAD
         
 def reset_globals():
     #AS PUSH ADDS MORE GLOBALS, THIS FUNCTION WILL NEED TO BE UPDATED
@@ -166,3 +167,6 @@ def compute_errors(pop_agents, rand_gens, argmap):
         errors.append(Pysh.evaluate.evaluate_individual(pop_agents[i], argmap['error_function'], rand_gens[i], argmap))
     return errors
     
+=======
+          
+>>>>>>> dcddd6526616ab5abd68189bb13183bad38cd92c
