@@ -41,7 +41,7 @@ def auto_simplify(ind, error_function, steps, printBool, progress_interval, main
                 ancestors = [ind['program']] + ind['ancestors']
             else:
                 ancestors = ind['ancestors']
-            return individual.make_induvidual(program = program, errors = errors, total_errors = total_errors, ind['history'], ancestors = ancestors)
+            return individual.make_induvidual(program = program, errors = errors, total_errors = total_errors, history = ind['history'], ancestors = ancestors)
         else:
             if random_push.lrand_int(5)< 4:
                 p = program
