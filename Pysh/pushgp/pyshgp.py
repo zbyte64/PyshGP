@@ -12,6 +12,7 @@ import Pysh.pushgp.breed
 import Pysh.pushgp.genetic_operators
 import Pysh.pushgp.parent_selection
 import Pysh.pushgp.report
+import Pysh.Experimental.decimation
 
 import datetime
 import random
@@ -107,7 +108,6 @@ def load_push_argmap(argmap):
         if push_argmap.has_key(k) == False:
             raise Exception('Argument key ' + str(k) + ' is not recognized argument to pushgp.')
         push_argmap[k] = v
-<<<<<<< HEAD
         
 def reset_globals():
     #AS PUSH ADDS MORE GLOBALS, THIS FUNCTION WILL NEED TO BE UPDATED
@@ -166,7 +166,40 @@ def compute_errors(pop_agents, rand_gens, argmap):
     for i in range(len(pop_agents)):
         errors.append(Pysh.evaluate.evaluate_individual(pop_agents[i], argmap['error_function'], rand_gens[i], argmap))
     return errors
-    
-=======
-          
->>>>>>> dcddd6526616ab5abd68189bb13183bad38cd92c
+
+def parental_reversion(pop_agents, generation, argmap):
+    if generation > 0 and argmap['parent-reversion-probability'] > 0:
+        if argmap['use-historically-assessed-hardness']:
+            err_fn = "hah-error"
+        elif argmap['use-rmse']:
+            err_fn = ":rms-error"
+        else:
+            err_fn = 'total-error'
+        print "Performing parent reversion..."
+        for i in pop_agents:
+            if (i[err_fn] < i['parent'][err_fn]) or ((i[err_fn] == i['parent'][err_fn]) and (Pysh.util.count_points(i['program'])>Pysh.util.count_points(i['parent']['program']))) or (Pysh.random_push.lrand()>argmap['parent-reversion-probability']):
+                i['parent'] = None
+                return i
+            else:
+                return i['parent']
+        print "Done performing parent reversion."
+        
+def remove_parents(pop_agents, argmap):
+    """
+    Removes value from :parent for each individual in the population. This will
+    save memory.
+    """
+    for i in pop_agents:
+        i['parent'] = 0
+        
+### calculate-hah-solution-rates-wrapper ### Still needed?? ###
+
+def produce_new_offspring(pop_agents, child_agents, rand_gens, argmap):
+    if argmap["decimal-ratio"]>=1:
+        pop = pop_agents
+    else:
+        pop = Pysh.Experimental.decimation.decimate(pop_agents, int(argmap['decimation-ratio']*argmap['population-size']), argmap['decimation-tournament-size'], argmap['trivial-geography-radius'])
+    for i in range(argmap['population-size']):
+        child_agents[i] = Pysh.pushgp.breed.breed(child_agents[i], i, rand_gens[i], pop, push_argmap)
+        
+        
