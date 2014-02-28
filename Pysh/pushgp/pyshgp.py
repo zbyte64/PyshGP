@@ -16,6 +16,9 @@ import Pysh.Experimental.decimation
 
 import datetime
 import random
+import time
+
+current_milli_time = lambda: int(round(time.time() * 1000))
 
 def rand1():
     return Pysh.random_push.lrand_int(100)
@@ -103,11 +106,11 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'use-bushy-code' : False, # When True, random code and code changed by ULTRA mutation, will be "bushy", as in close to a binary tree
             }
 
-def load_push_argmap(argmap):
-    for k, v in argmap.iteritems():
-        if push_argmap.has_key(k) == False:
-            raise Exception('Argument key ' + str(k) + ' is not recognized argument to pushgp.')
-        push_argmap[k] = v
+def load_push_argmap(args):
+    for k in push_argmap.keys():
+        for k2 in args.keys():
+            if k is k2:
+                push_argmap[k] = args[k]
         
 def reset_globals():
     #AS PUSH ADDS MORE GLOBALS, THIS FUNCTION WILL NEED TO BE UPDATED
@@ -202,4 +205,42 @@ def produce_new_offspring(pop_agents, child_agents, rand_gens, argmap):
     for i in range(argmap['population-size']):
         child_agents[i] = Pysh.pushgp.breed.breed(child_agents[i], i, rand_gens[i], pop, push_argmap)
         
+def install_next_generation(pop_agents, child_agents, argmap):
+    for i in range(argmap['population-size']):
+        pop_agents[i] = pop_agents[i]['child-agents'][i]
         
+def check_genetic_operator_probabilities_add_to_one(argmap):
+    prob_keywords = ['mutation-probability', 'crossover-probability', 'simplification-probability', 'ultra-probability', 'guassian-mutaion-probability', 'boolean-gsxover-probability',
+                     'deletion-mutaion-probability', 'parentheses-addition-mutation-probability', 'tagging-mutation-probability', 'tag-branch-mutation-probability']
+    prob_map = {}
+    for key in prob_keywords():
+        prob_map[key] = argmap[key]
+    prob_total = 0
+    for e in prob_map:
+        prob_total += e
+    if prob_total is 1:
+        return True
+    else:
+        print 'Error probabilities do not add up to 1'
+        print 'They add up to: ' + str(prob_total)
+        return False
+
+def timer(argmap, step):
+    '''
+    Used to track the time used by different parts of evolution.
+    '''
+    if argmap['print-timings']:
+        start_time = Pysh.globals.timer
+        current_time_for_step = Pysh.globals.timing_map[step]
+        Pysh.globals.timer = current_milli_time()
+        Pysh.globals.timing_map[step] = current_time_for_step + (Pysh.globals.timer - start_time) 
+
+def pushpg(args = []):
+    '''
+    The top-level routine of pushgp.
+    '''
+    Pysh.globals.timer = current_milli_time()
+    load_push_argmap(args)
+    # set globals from parameters
+    reset_globals()
+    
