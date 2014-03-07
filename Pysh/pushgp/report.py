@@ -84,7 +84,85 @@ def json_print(population, generation, json_log_filename, log_fitness_for_all_ca
 
 #def lexicase_report():
 
-#def report_and_check_for_sucess
+def sort_by_util(err_fn, population):
+    for i in range(len(population)):
+        for j in range(len(population))-1:
+            if population[j][err_fn] >= population[j+1][err_fn]:
+                temp = population[j]
+                population[j] = population[j+1]
+                population[j+1] = temp
+
+def report_and_check_for_sucess(population, generation, argmap):
+    print
+    print ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
+    print ';; Report at generation ' + str(generation)
+    
+    if argmap['use-rmse']:
+        err_fn = 'rms-error'
+    else:
+        err_fn = 'total_error'
+    sorted = sort_by_util(err_fn, population)
+    err_fn_best = sorted[1]
+    psr_best = argmap['problem_specific_report'](err_fn_best, population, generation, argmap['error_function'], argmap['report_simplifications'])
+    if psr_best.keys() == ['program', 'errors', 'total-error', 'hah-error', 'rms-error', 'history', 'ancestors parent']:
+        best = psr_best
+    else:
+        best = err_fn_best
+    
+    if argmap['print-error-frequencies-by-case']:
+        a = ['']
+        for i in population:
+            a.append(i['error'])
+        print 'Error frequencies by case: ' + str(a)
+    if argmap['use-lexicase-selection']:
+        print('CANNOT REPORT ON LEXICASE')
+    print '--- Best Program based on (error function) Statistics ---'
+    print 'Best program: ' + str(best['program'])
+    if argmap['report-simplifications'] > 0:
+        print 'Partial simplification:'
+        print str(Pysh.simplification.auto_simplify(best, argmap['error_function'], argmap['report-simplifications'], False, 1000))
+    if argmap['print-errors']:
+        print 'Errors: ' + str(best['errors'])
+    print 'Total: ' + str(best['total-error'])
+    print 'Mean: ' + str(float((best['total-error'])/len(best['errors'])))
+    if argmap['use-historically-assessed-hardness']:
+        print 'HAH-error: ' + best['hah-error']
+    if argmap['use-rmse']:
+        print 'RMS-error: ' + str(best['rms-error'])
+    if argmap['print-history']:
+        print 'History: ' + best['history']
+    print 'Size: ' + Pysh.util.count_points(best['program'])
+    print 'Percent parens: ' + str(Pysh.util.count_parens(best['program'])/Pysh.util.count_points(best['program']))
+    print '--- Population Statistics ---'
+    if argmap['print-cosmos-data']:
+        print 'WHAT IS COSMOS DATA?'
+    popTE = 0;
+    for i in population:
+        popTE += i['total-error']
+    avgTE = popTE/len(population)
+    print 'Average total errors in population: ' + str(avgTE)
+    medTE = 0
+    population[len(population)/2]['total-error']
+    if argmap['print-errors']:
+        print 'ERROR MINIMA AND AVERAGE SIZE PRINTING COMING SOON'
+    totalSize = 0;
+    for i in population:
+        totalSize += Pysh.util.count_points(i['program'])
+    avgSize = totalSize/len(population);
+    print 'Average program size in population (points): ' + avgSize
+    print'INFO ON UNIQUIE PROGRAMS AND FREQUENCIES COMING SOON'
+    print 'INFO ON TIMING COMING SOON'
+    if argmap['print-cvs-logs']:
+        csv_print(population, generation, argmap['cvs-log-filename'], argmap['log-fitnesses-for-all-cases']);
+    if argmap['prin-json-logs']:
+        json_print(population, generation, argmap['json-log-filename'], argmap['log-fitness-for-all-cases'], argmap['json-log-program-strings']);
+    if (best['total-error'] <= argmap['error-threshold']) or (best['succes']):
+        return best
+    elif generation >= argmap['max-generations']:
+        return 'failure'
+    else:
+        return 'continue'
+    
 
 def initial_report():
     '''

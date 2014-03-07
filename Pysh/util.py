@@ -90,6 +90,19 @@ def count_points(tree):
         return sum
     else:
         return 1
+    
+def count_parens(tree):
+    '''
+    Returns the number of paren pairs in tree.
+    '''
+    if type(tree)== list:
+        sum = 1
+        for e in tree:
+            sum += count_parens(e)
+        return sum
+    else:
+        return 0
+        
 
 def code_at_point(tree, point_index):
     '''

@@ -43,11 +43,11 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'evalpush-time-limit' : 0,
             'reuse-errors' : True,
             #GENETIC OPERATOR PROBABILITIES (replication-probability is 1.0 minus the rest)
-            'reproduction-probability' : 0.1,
-            'mutation-probability' : 0.4,
-            'crossover-probability' : 0.5,
+            'reproduction-probability' : 0.0,
+            'mutation-probability' : 0.0,
+            'crossover-probability' : 0.0,
             'simplification-probability' : 0.0,
-            'ultra-probability' : 0.0,
+            'ultra-probability' : 1.0,
             'gaussian-mutation-probability' : 0.0,
             'boolean-gsxover-probability' : 0.0,
             'deletion-mutation-probability' : 0.0,
@@ -243,4 +243,47 @@ def pushpg(args = []):
     load_push_argmap(args)
     # set globals from parameters
     reset_globals()
+    Pysh.pushgp.report.initial_report()
+    Pysh.pushgp.report.print_params(push_argmap)
+    check_genetic_operator_probabilities_add_to_one(push_argmap)
+    timer(push_argmap, 'initialization')
+    print '\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
+    print '\nGenerating initial population...'
     
+    keys = make_agents_and_rng(push_argmap)
+    
+    generation = 0
+    running = 'continue'
+    while running is 'continue':
+        print 'Processing Generation: '+ str(generation)
+        timer(push_argmap, 'reproduction')
+        print 'Computing errors...'
+        compute_errors(keys['pop-agents'], keys['rand-gens'], push_argmap)
+        print 'Done computing errors.'
+        timer(push_argmap, 'fitness')
+        #Possible parent reversion
+        parental_reversion(keys['pop-agents'], generation, push_argmap)
+        # stop tracking parents since they arn't used any more
+        remove_parents(keys['pop_agents'], push_argmap)
+        # calculate solution rates if necessary for h.a.h.
+        #calculate_hah_solution_rates_wrapper(NOT IN YET)
+        if push_argmap['use-elitegroup-lexicase-selection']:
+            #build-elitegroups(keys['pop-agents'])
+            print 'LEXICASE SELECTION NOT IMPLEMENTED YET'
+        timer(push_argmap, 'other')
+        
+        population = []
+        for a in keys['pop-agents']:
+            population.append(a)
+            
+        outcome = Pysh.pushgp.report.report_and_check_for_sucess(population, generation, push_argmap)
+        if outcome is 'failure':
+            print '\nFAILURE'
+            running = False
+        elif outcome is 'continue':
+            timer(push_argmap, 'report')
+            print '\nProducing offspring...'
+            produce_new_offspring(keys['pop-agents'], keys['child-agents'], keys['rang-gens'], push_argmap)
+            generation += 1
+        else:
+            Pysh.pushgp.report.final_report(generation, outcome, push_argmap)
