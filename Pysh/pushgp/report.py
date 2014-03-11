@@ -86,11 +86,12 @@ def json_print(population, generation, json_log_filename, log_fitness_for_all_ca
 
 def sort_by_util(err_fn, population):
     for i in range(len(population)):
-        for j in range(len(population))-1:
+        for j in range(len(population)-1):
             if population[j][err_fn] >= population[j+1][err_fn]:
                 temp = population[j]
                 population[j] = population[j+1]
                 population[j+1] = temp
+    return population
 
 def report_and_check_for_sucess(population, generation, argmap):
     print
@@ -100,10 +101,10 @@ def report_and_check_for_sucess(population, generation, argmap):
     if argmap['use-rmse']:
         err_fn = 'rms-error'
     else:
-        err_fn = 'total_error'
+        err_fn = 'total-error'
     sorted = sort_by_util(err_fn, population)
     err_fn_best = sorted[1]
-    psr_best = argmap['problem_specific_report'](err_fn_best, population, generation, argmap['error_function'], argmap['report_simplifications'])
+    psr_best = argmap['problem-specific-report'](err_fn_best, population, generation, argmap['error-function'], argmap['report-simplifications'])
     if psr_best.keys() == ['program', 'errors', 'total-error', 'hah-error', 'rms-error', 'history', 'ancestors parent']:
         best = psr_best
     else:
@@ -120,7 +121,7 @@ def report_and_check_for_sucess(population, generation, argmap):
     print 'Best program: ' + str(best['program'])
     if argmap['report-simplifications'] > 0:
         print 'Partial simplification:'
-        print str(Pysh.simplification.auto_simplify(best, argmap['error_function'], argmap['report-simplifications'], False, 1000))
+        print str(Pysh.simplification.auto_simplify(best, argmap['error-function'], argmap['report-simplifications'], False, 1000))
     if argmap['print-errors']:
         print 'Errors: ' + str(best['errors'])
     print 'Total: ' + str(best['total-error'])

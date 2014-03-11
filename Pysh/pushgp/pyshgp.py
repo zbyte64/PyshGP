@@ -32,7 +32,7 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'initial-population' : None, #(MAY BE BROKEN) Can point to a file where an initial population is stored and can be read
             'save-initial-population' : False, #When true, saves the initial population
             #STANDARD GP ARGUMENTS
-            'error-function' : 'FUNCTION IN DICTIONARY?', #Function that takes a program and returns a list of errors
+            'error-function' : ":NO ERROR FUNCTION:", #Function that takes a program and returns a list of errors
             'error-threshold' : 0, #
             'atom-generators' : [Pysh.pushstate.registered_instructions, rand1, rand2],
             'population-size' : 1000,
@@ -52,7 +52,7 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'boolean-gsxover-probability' : 0.0,
             'deletion-mutation-probability' : 0.0,
             'parentheses-addition-mutaion-probability' : 0.0,
-            'tagging-mutaion-probability' : 0.0,
+            'tagging-mutation-probability' : 0.0,
             'tag-branch-mutation-probability' : 0.0,
             #ARGUMENTS RELATED TO GENETIC OPERATORS,
             'mutation-max-points' : 20, # The maximum number of points that new code will introduce during mutation
@@ -85,15 +85,16 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'top-level-push-code' : True, # When True, run-push will push the program's code onto the code stack prior to running
             'top-level-pop-code' : True, # When True, run-push will pop the code stack after running the program
             #ARGUMENTS RELATED TO GENERATIONAL AND FINAL REPORTS
-            'pushgp-simplifications' : 100, # The number of simplification steps that will happen during pushgp simplifications
+            'report-simplifications' : 100, # The number of simplification steps that will happen during pushgp simplifications
             'final-pushgp-simplifications' : 1000, # The number of simplification steps that will happen during final pushgp simplifications
-            'problem-specific-pushgp' : 'default-problem-specific-pushgp', # A function can be called to provide a problem-specific pushgp, which happens after the normal generational pushgp is printed
+            'problem-specific-report' : 'default-problem-specific-report', # A function can be called to provide a problem-specific pushgp, which happens after the normal generational pushgp is printed
             'print-errors' : True, # When True, prints the error vector of the best individual
             'print-history' : False, # When True, prints the history of the best individual's ancestors' total errors
             'print-timings' : False, # If True, pushgp prints how long different parts of evolution have taken during the current run.
             'print-cosmos-data' : False, # If True, pushgp prints COSMOS data each generation.
             'maintain-ancestors' : False, # If True, save all ancestors in each individual (costly)
             'print-ancestors-of-solution' : False, # If True, final pushgp prints the ancestors of the solution. Requires 'maintain-ancestors to be True.
+            'print-error-frequencies-by-case' : False,
             #ARGUMENTS RELATED TO PRINTING JSON OR CSV LOGS
             'print-csv-logs' : False, # Prints a CSV log of the population each generation
             'print-json-logs' : False, # Prints a JSON log of the population each generation
@@ -107,10 +108,11 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             }
 
 def load_push_argmap(args):
-    for k in push_argmap.keys():
-        for k2 in args.keys():
-            if k is k2:
-                push_argmap[k] = args[k]
+    for k in args.keys():
+        print k
+        if push_argmap[k] != None:
+            print"HIT ME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
+            push_argmap[k] = args[k]
         
 def reset_globals():
     #AS PUSH ADDS MORE GLOBALS, THIS FUNCTION WILL NEED TO BE UPDATED
@@ -142,32 +144,32 @@ def make_agents_and_rng(argmap):
         print("NO READING FROM FILE YET")
     else:
         pa = []
-        for i in range(argmap['population_size']):
+        for i in range(argmap['population-size']):
             pa.append(Pysh.individual.make_induvidual(Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators'])))
         f = str('data/'+str(datetime.datetime.now())+'.ser')
         if argmap['save-initial-population']:
             print('SORRY NO SAVING POPULATIONS YET')
         
         ca = []
-        for i in range(argmap['population_size']):
+        for i in range(argmap['population-size']):
             ca.append(Pysh.individual.make_induvidual())
         
         rs = []
-        for i in range(argmap['population_size']):
+        for i in range(argmap['population-size']):
             rs.append(random.randint(0, 9999999))
             
         rg = []
-        for i in range(argmap['population_size']):
+        for i in range(argmap['population-size']):
             temp = random.Random()
             temp.seed(rs[i])
-            ca.append(temp)
+            rg.append(temp)
     
     return {'pop-agents':pa, 'child-agents':ca, 'random-seeds':rs, 'rand-gens':rg}
         
 def compute_errors(pop_agents, rand_gens, argmap):
     errors = []
-    for i in range(len(pop_agents)):
-        errors.append(Pysh.evaluate.evaluate_individual(pop_agents[i], argmap['error_function'], rand_gens[i], argmap))
+    for i in range(len(pop_agents)-1):
+        errors.append(Pysh.evaluate.evaluate_individual(pop_agents[0], argmap['error-function'], rand_gens[0], argmap))
     return errors
 
 def parental_reversion(pop_agents, generation, argmap):
@@ -210,14 +212,14 @@ def install_next_generation(pop_agents, child_agents, argmap):
         pop_agents[i] = pop_agents[i]['child-agents'][i]
         
 def check_genetic_operator_probabilities_add_to_one(argmap):
-    prob_keywords = ['mutation-probability', 'crossover-probability', 'simplification-probability', 'ultra-probability', 'guassian-mutaion-probability', 'boolean-gsxover-probability',
-                     'deletion-mutaion-probability', 'parentheses-addition-mutation-probability', 'tagging-mutation-probability', 'tag-branch-mutation-probability']
+    prob_keywords = ['mutation-probability', 'crossover-probability', 'simplification-probability', 'ultra-probability', 'gaussian-mutation-probability', 'boolean-gsxover-probability',
+                     'deletion-mutation-probability', 'parentheses-addition-mutaion-probability', 'tagging-mutation-probability', 'tag-branch-mutation-probability']
     prob_map = {}
-    for key in prob_keywords():
+    for key in prob_keywords:
         prob_map[key] = argmap[key]
     prob_total = 0
-    for e in prob_map:
-        prob_total += e
+    for k in prob_map:
+        prob_total += prob_map[k]
     if prob_total is 1:
         return True
     else:
@@ -235,7 +237,7 @@ def timer(argmap, step):
         Pysh.globals.timer = current_milli_time()
         Pysh.globals.timing_map[step] = current_time_for_step + (Pysh.globals.timer - start_time) 
 
-def pushpg(args = []):
+def pushpg(args):
     '''
     The top-level routine of pushgp.
     '''
@@ -264,7 +266,7 @@ def pushpg(args = []):
         #Possible parent reversion
         parental_reversion(keys['pop-agents'], generation, push_argmap)
         # stop tracking parents since they arn't used any more
-        remove_parents(keys['pop_agents'], push_argmap)
+        remove_parents(keys['pop-agents'], push_argmap)
         # calculate solution rates if necessary for h.a.h.
         #calculate_hah_solution_rates_wrapper(NOT IN YET)
         if push_argmap['use-elitegroup-lexicase-selection']:
