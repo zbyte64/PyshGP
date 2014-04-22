@@ -41,12 +41,12 @@ def state_pretty_print(state):
             line += str(i) + ", "
         print line
 
-def push_item(value, type, state):
+def push_item(value, push_type, state):
     '''
     Returns a copy of the state with the value pushed on the named stack. This is a utility,
     not for use in Push programs.
     '''
-    state[type].insert(0,value)
+    state[push_type].insert(0,value)
     return state
 
 def top_item(type, state):
@@ -59,6 +59,7 @@ def top_item(type, state):
         return stack[0]
     else:
         print "NO-STACK-ITEM"
+        return "NO-STACK-ITEM"
     
 def stack_ref(type, position, state):
     '''
@@ -102,4 +103,13 @@ def end_environment(state):
         old_return.pop(0)
         new_state = push_item(old_return[0], 'exec', new_state)
     return new_state
-        
+
+def registered_nonrandom():
+    '''
+    Returns a list of all registered instructions aside from random instructions.
+    '''
+    ret = []
+    for i in registered_instructions:
+        if not i.endswith('_rand'):
+            ret.append(i)
+    return ret

@@ -87,7 +87,7 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             #ARGUMENTS RELATED TO GENERATIONAL AND FINAL REPORTS
             'report-simplifications' : 100, # The number of simplification steps that will happen during pushgp simplifications
             'final-pushgp-simplifications' : 1000, # The number of simplification steps that will happen during final pushgp simplifications
-            'problem-specific-report' : 'default-problem-specific-report', # A function can be called to provide a problem-specific pushgp, which happens after the normal generational pushgp is printed
+            'problem-specific-report' : Pysh.pushgp.report.default_problem_specific_report, # A function can be called to provide a problem-specific pushgp, which happens after the normal generational pushgp is printed
             'print-errors' : True, # When True, prints the error vector of the best individual
             'print-history' : False, # When True, prints the history of the best individual's ancestors' total errors
             'print-timings' : False, # If True, pushgp prints how long different parts of evolution have taken during the current run.
@@ -109,9 +109,7 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
 
 def load_push_argmap(args):
     for k in args.keys():
-        print k
         if push_argmap[k] != None:
-            print"HIT ME!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"
             push_argmap[k] = args[k]
         
 def reset_globals():
@@ -146,6 +144,11 @@ def make_agents_and_rng(argmap):
         pa = []
         for i in range(argmap['population-size']):
             pa.append(Pysh.individual.make_induvidual(Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators'])))
+            
+        print
+        print pa[0]
+        print 
+        
         f = str('data/'+str(datetime.datetime.now())+'.ser')
         if argmap['save-initial-population']:
             print('SORRY NO SAVING POPULATIONS YET')
@@ -163,8 +166,12 @@ def make_agents_and_rng(argmap):
             temp = random.Random()
             temp.seed(rs[i])
             rg.append(temp)
-    
-    return {'pop-agents':pa, 'child-agents':ca, 'random-seeds':rs, 'rand-gens':rg}
+            
+        print
+        print pa[0]
+        print
+        
+        return {'pop-agents':pa, 'child-agents':ca, 'random-seeds':rs, 'rand-gens':rg}
         
 def compute_errors(pop_agents, rand_gens, argmap):
     errors = []
@@ -253,6 +260,8 @@ def pushpg(args):
     print '\nGenerating initial population...'
     
     keys = make_agents_and_rng(push_argmap)
+    
+    print keys['pop-agents'][0]
     
     generation = 0
     running = 'continue'

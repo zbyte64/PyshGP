@@ -105,7 +105,7 @@ def report_and_check_for_sucess(population, generation, argmap):
     sorted = sort_by_util(err_fn, population)
     err_fn_best = sorted[1]
     psr_best = argmap['problem-specific-report'](err_fn_best, population, generation, argmap['error-function'], argmap['report-simplifications'])
-    if psr_best.keys() == ['program', 'errors', 'total-error', 'hah-error', 'rms-error', 'history', 'ancestors parent']:
+    if type(psr_best) == list and psr_best.keys() == ['program', 'errors', 'total-error', 'hah-error', 'rms-error', 'history', 'ancestors parent']:
         best = psr_best
     else:
         best = err_fn_best
