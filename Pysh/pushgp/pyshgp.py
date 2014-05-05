@@ -143,12 +143,8 @@ def make_agents_and_rng(argmap):
     else:
         pa = []
         for i in range(argmap['population-size']):
-            pa.append(Pysh.individual.make_induvidual(Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators'])))
-            
-        print
-        print pa[0]
-        print 
-        
+            pa.append(Pysh.individual.make_induvidual(Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators'])))   
+                 
         f = str('data/'+str(datetime.datetime.now())+'.ser')
         if argmap['save-initial-population']:
             print('SORRY NO SAVING POPULATIONS YET')
@@ -261,6 +257,7 @@ def pushpg(args):
     
     keys = make_agents_and_rng(push_argmap)
     
+    print ':3:'
     print keys['pop-agents'][0]
     
     generation = 0

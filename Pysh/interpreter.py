@@ -139,7 +139,8 @@ def run_push(code, state, print_steps = False, trace = False, save_state_sequenc
         code = Pysh.util.push_to_python(code)
     if globals.global_top_level_push_code:
         s = Pysh.pushstate.push_item(code, 'code', state)
-    s = Pysh.pushstate.push_item(code, 'exec', state)
+    else:
+        s = Pysh.pushstate.push_item(code, 'exec', state)
     if print_steps:
         print '\nState after 0 steps:'
         Pysh.pushstate.state_pretty_print(s)

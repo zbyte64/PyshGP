@@ -127,6 +127,8 @@ def insert_code_at_point(tree, point_index, new_subtree):
     Returns a copy of tree with the subtree formerly indexed by
     point-index (in a depth-first traversal) replaced by new-subtree.
     '''
+    if point_index < 1:
+        point_index = 1
     t = pysh_tree.PyshTreeNode()
     t.loadFromList(tree)
     cn = t
