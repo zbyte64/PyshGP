@@ -71,7 +71,6 @@ def eval_push(state, print_steps = False, trace = False, save_state_sequence = F
         time_limit = globals.global_evalpush_time_limit + time.time()
     running = True
     while running:
-        print
         bool1 = iteration> globals.global_evalpush_limit
         bool2 = len(s['exec']) == 0 and len(s['environment'])==0
         bool3 = time_limit != 0 and time.time() > time_limit

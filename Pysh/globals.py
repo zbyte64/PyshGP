@@ -17,6 +17,7 @@ min_random_string_length = 1 # The minimum length of string created by the strin
 max_random_string_length = 10 # The maximum length of string created by the string_rand instruction
 max_points_in_random_expressions = 50 # The maximum length of code created by the string_rand instruction
 
+evaluations_count = 0
 timer = 0
 timing_map = {'initialization' : 0, 
               'reproduction' : 0, 

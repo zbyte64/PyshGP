@@ -58,7 +58,6 @@ def top_item(type, state):
     if len(stack)>0:
         return stack[0]
     else:
-        print "NO-STACK-ITEM"
         return "NO-STACK-ITEM"
     
 def stack_ref(type, position, state):

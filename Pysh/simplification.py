@@ -26,6 +26,7 @@ def auto_simplify(ind, error_function, steps, printBool, progress_interval, main
     '''
     Auto-simplifies the provided individual.
     '''
+    
     if printBool:
         print '\nAuto-simplifying with starting size: ' + str(util.count_points(ind['program']))
     looping = True

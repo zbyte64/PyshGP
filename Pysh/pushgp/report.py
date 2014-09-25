@@ -84,30 +84,39 @@ def json_print(population, generation, json_log_filename, log_fitness_for_all_ca
 
 #def lexicase_report():
 
-def sort_by_util(err_fn, population):
+def quicksort(err_fn, population):
+    if not population:
+        return []
+
+    return quicksort([x for x in population if x[err_fn] < population[0][err_fn]]) \
+        + [x for x in population if x[err_fn] == population[0][err_fn]] \
+        + quicksort([x for x in population if x[err_fn] > population[0][err_fn]])
+
+"""def sort_by_util(err_fn, population):
     for i in range(len(population)):
         for j in range(len(population)-1):
             if population[j][err_fn] >= population[j+1][err_fn]:
                 temp = population[j]
                 population[j] = population[j+1]
                 population[j+1] = temp
-    return population
+    return population"""
 
 def report_and_check_for_sucess(population, generation, argmap):
     print
     print ';;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
     print ';; Report at generation ' + str(generation)
     
-    if argmap['use-rmse']:
+    if argmap['total-error-method'] is 'rmse':
         err_fn = 'rms-error'
     else:
         err_fn = 'total-error'
-    sorted = sort_by_util(err_fn, population)
-    err_fn_best = sorted[1]
+    sorted_pop = quicksort(err_fn, population)
+    err_fn_best = sorted_pop[0]
     psr_best = argmap['problem-specific-report'](err_fn_best, population, generation, argmap['error-function'], argmap['report-simplifications'])
     if type(psr_best) == list and psr_best.keys() == ['program', 'errors', 'total-error', 'hah-error', 'rms-error', 'history', 'ancestors parent']:
         best = psr_best
     else:
+        print "Err Fn best"
         best = err_fn_best
     
     if argmap['print-error-frequencies-by-case']:
@@ -115,7 +124,7 @@ def report_and_check_for_sucess(population, generation, argmap):
         for i in population:
             a.append(i['error'])
         print 'Error frequencies by case: ' + str(a)
-    if argmap['use-lexicase-selection']:
+    if argmap['parent-selection'] is 'lexicase':
         print('CANNOT REPORT ON LEXICASE')
     print '--- Best Program based on (error function) Statistics ---'
     print 'Best program: ' + str(best['program'])

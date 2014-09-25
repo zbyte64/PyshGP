@@ -4,7 +4,8 @@ Created on Dec 21, 2013
 @author: Eddie Pantridge Hampshire College
 '''
 
-induvidual = {'program': [],
+empty_induvidual = {'genome': [],
+              'program': [],
               'errors': [],
               'total-error': [],
               'hah-error': [],
@@ -13,16 +14,15 @@ induvidual = {'program': [],
               'ancestors': [],
               'parent': []}
 
-def make_induvidual(program = None, errors = None, total_error = None, hah_error = None, rms_error = None, history = None, ancestors = None, parent = None):
-    i = induvidual
-    i['program'] = program
-    i['errors'] = errors
-    i['total-error'] = total_error
-    i['hah-error'] = hah_error
-    i['rms-error'] = rms_error
-    i['history'] = history
-    i['ancestors'] = ancestors
-    i['parent'] = parent
+def make_induvidual(genome = None, program = None, errors = None, total_error = None, weighted_error = None, history = None, ancestors = None, parent = None):
+    i = {'genome': genome,
+         'program': program,
+         'errors': errors,
+         'total-error': total_error,
+         'weighted-error': weighted_error,
+         'history': history,
+         'ancestors': ancestors,
+         'parent': parent}
     return i
 
 # No lazy sequences in Python

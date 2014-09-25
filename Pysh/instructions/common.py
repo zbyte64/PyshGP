@@ -5,6 +5,14 @@ Created on Dec 21, 2013
 '''
 from .. import pushstate
 
+#################################################################################
+## Lookup function to see how many paren groups a function requires. Uses metadata.
+def lookup_instruction_paren_groups(ins):
+    pass
+
+
+###############################################################################################
+## instructions for all types (except non-data stacks such as auxiliary, tag, input, and output)
 def popper(type):
     '''
     Returns a function that takes a state and pops the appropriate stack of the state.

@@ -271,4 +271,43 @@ def walklist(inner, outer, form):
     REPLACED BY pysh_tree
     '''
             
+def reductions_add(list):
+    for i in range(len(list)):
+        if i > 0:
+            list[i] = list[i-1]+list[i]
+    return list
+
+def open_close_sequence_to_list(lst):
+    pyString = ''
+    for element in lst:
+        if element == ':open':
+            pyString += '['
+        elif element == ':close':
+            pyString += ']'
+            pyString += ','
+        else:
+            pyString += str(element)
+            pyString += ','
+    pyString = pyString[:-1]
     
+    errors = True
+    progressIndex = 0
+    while errors:
+        try: pyCode = eval(pyString)
+        except NameError as detail:
+            s = str(detail)
+            start = s.index('\'')+1
+            end = s.index('\'', start+1)
+            s = s[start:end]
+            
+            orgIndex = pyString.index(s, progressIndex)
+            progressIndex = orgIndex
+            pyString = pyString[:orgIndex] + pyString[orgIndex+len(s):]
+            s = '\'' + s + '\''
+            pyString = pyString[:orgIndex] + s + pyString[orgIndex:]
+            start += len(s)
+        else:
+            errors = False      
+    return list(pyCode)
+
+#print open_close_sequence_to_list( [':open', '1', '2', ':open', 'a', 'b', ':open', 'c', ':close', ':open', ':open', 'd', ':close', ':close',  ':close', ':close'] ) 

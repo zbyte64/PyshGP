@@ -35,7 +35,7 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'error-function' : ":NO ERROR FUNCTION:", #Function that takes a program and returns a list of errors
             'error-threshold' : 0, #
             'atom-generators' : [Pysh.pushstate.registered_instructions, rand1, rand2],
-            'population-size' : 1000,
+            'population-size' : 100,
             'max-generations' : 1001,
             'max-points' : 50,
             'max-points-in-initial-program' : 50,
@@ -71,14 +71,14 @@ push_argmap = {#CLOJUSH SYSTEM ARGUMENTS
             'node-selection-leaf-probability' : 0.1, # If the node-selection-method is 'leaf-probability, this is the percent of selections that will happen in leaves of the tree
             'node-selection-tournament-size' : 2, # If node-selection-method is 'size-tournament, this is the size of the node selection tournaments
             #ARGUMENTS RELATED TO PARENT SELECTION
+            'parent-selection' : 'tournament', #The parent selection method. Options include 'tournament', 'lexicase', 'elitegroup-lexicase'
             'tournament-size' : 7, # If using tournament selection, the size of the tournaments
+            'total-error-method' : 'sum', # The method used to compute total error. Options include :sum (standard), :hah (historically-assessed hardness), :rmse (root mean squared error), and :ifs (implicit fitness sharing)
+            'normalization' : 'none', # The method used to normalize the errors to the range [0,1], with 0 being best. Options include :none (no normalization), :divide-by-max-error (divides by value of argument :max-error), :e-over-e-plus-1 (e/(e+1) = 1 - 1/(e+1))
+            'max-error' : 1000, # If :normalization is set to :max-error, will use this number for normalization
             'trivial-geography-radius' : 0, # If non-zero, this is used as the radius from which to select individuals for tournament or lexicase selection
             'decimation-ratio' : 1, # If >= 1, does nothing. Otherwise, is the percent of the population size that is retained before breeding. If 0 < decimation-ratio < 1, decimation tournaments will be used to reduce the population to size (* population-size decimation-ratio) before breeding.
             'decimation-tournament-size' : 2, # Size of the decimation tournaments
-            'use-historically-assessed-hardness' : False, # When True, total error for tournament selection will depend on historically-assessed hardness
-            'use-rmse' : False, # When True, total error for tournament selection will depend on the root mean square error of the error vector
-            'use-lexicase-selection' : False, # If True, uses Lexicase Parent Selection (see Spector paper in GECCO-UP 2012 workshop proceedings)
-            'use-elitegroup-lexicase-selection' : False, # If True, uses elitegroup lexicase selection, an experimental change to lexicase that thus far is often worse
             #ARGUMENTS RELATED TO THE PUSH INTERPRETER
             'pop-when-tagging' : True, # When True, tagging instructions will pop the exec stack when tagging# otherwise, the exec stack is not popped
             'tag-limit' : 10000, # The size of the tag space
@@ -141,9 +141,13 @@ def make_agents_and_rng(argmap):
         #READ POPULATION IN FROM FILE
         print("NO READING FROM FILE YET")
     else:
-        pa = []
+                
+        pop_agents = []
         for i in range(argmap['population-size']):
-            pa.append(Pysh.individual.make_induvidual(Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators'])))   
+            genome = random_plush_genome(argmap['max-points-in-initial-program'], argmap['atom-generators'])
+            pa_ind = Pysh.individual.make_induvidual( Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators']))
+            print pa_ind
+            pop_agents.append( pa_ind )   
                  
         f = str('data/'+str(datetime.datetime.now())+'.ser')
         if argmap['save-initial-population']:
@@ -162,18 +166,12 @@ def make_agents_and_rng(argmap):
             temp = random.Random()
             temp.seed(rs[i])
             rg.append(temp)
-            
-        print
-        print pa[0]
-        print
         
-        return {'pop-agents':pa, 'child-agents':ca, 'random-seeds':rs, 'rand-gens':rg}
+        return {'pop-agents':pop_agents, 'child-agents':ca, 'random-seeds':rs, 'rand-gens':rg}
         
 def compute_errors(pop_agents, rand_gens, argmap):
-    errors = []
-    for i in range(len(pop_agents)-1):
-        errors.append(Pysh.evaluate.evaluate_individual(pop_agents[0], argmap['error-function'], rand_gens[0], argmap))
-    return errors
+    for pa in pop_agents:
+        pa = Pysh.evaluate.evaluate_individual(pa, argmap['error-function'], rand_gens[1], argmap)
 
 def parental_reversion(pop_agents, generation, argmap):
     if generation > 0 and argmap['parent-reversion-probability'] > 0:
@@ -256,9 +254,7 @@ def pushpg(args):
     print '\nGenerating initial population...'
     
     keys = make_agents_and_rng(push_argmap)
-    
-    print ':3:'
-    print keys['pop-agents'][0]
+    print "INIT FIRST PA", keys[''][0]
     
     generation = 0
     running = 'continue'
@@ -268,6 +264,9 @@ def pushpg(args):
         print 'Computing errors...'
         compute_errors(keys['pop-agents'], keys['rand-gens'], push_argmap)
         print 'Done computing errors.'
+        
+        print "First Pop-Agent", keys['pop-agents'][0]
+        
         timer(push_argmap, 'fitness')
         #Possible parent reversion
         parental_reversion(keys['pop-agents'], generation, push_argmap)
@@ -275,7 +274,7 @@ def pushpg(args):
         remove_parents(keys['pop-agents'], push_argmap)
         # calculate solution rates if necessary for h.a.h.
         #calculate_hah_solution_rates_wrapper(NOT IN YET)
-        if push_argmap['use-elitegroup-lexicase-selection']:
+        if push_argmap['parent-selection'] is 'elitegroup-lexicase':
             #build-elitegroups(keys['pop-agents'])
             print 'LEXICASE SELECTION NOT IMPLEMENTED YET'
         timer(push_argmap, 'other')
@@ -283,7 +282,7 @@ def pushpg(args):
         population = []
         for a in keys['pop-agents']:
             population.append(a)
-            
+        
         outcome = Pysh.pushgp.report.report_and_check_for_sucess(population, generation, push_argmap)
         if outcome is 'failure':
             print '\nFAILURE'
