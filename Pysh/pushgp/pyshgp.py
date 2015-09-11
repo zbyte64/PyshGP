@@ -111,7 +111,7 @@ def load_push_argmap(args):
     for k in args.keys():
         if push_argmap[k] != None:
             push_argmap[k] = args[k]
-        
+
 def reset_globals():
     #AS PUSH ADDS MORE GLOBALS, THIS FUNCTION WILL NEED TO BE UPDATED
     for k, v in push_argmap.iteritems():
@@ -133,7 +133,7 @@ def reset_globals():
             Pysh.globals.global_pop_when_tagging = push_argmap[k]
         elif k is 'use-bushy-code':
             Pysh.globals.global_use_bushy_code = push_argmap[k]
-            
+
 def make_agents_and_rng(argmap):
     #agent_error_handler
     #random_seeds = []
@@ -141,34 +141,34 @@ def make_agents_and_rng(argmap):
         #READ POPULATION IN FROM FILE
         print("NO READING FROM FILE YET")
     else:
-                
+
         pop_agents = []
         for i in range(argmap['population-size']):
-            genome = random_plush_genome(argmap['max-points-in-initial-program'], argmap['atom-generators'])
+            genome = Pysh.random_push.random_plush_genome(argmap['max-points-in-initial-program'], argmap['atom-generators'])
             pa_ind = Pysh.individual.make_induvidual( Pysh.random_push.random_code(argmap['max-points-in-initial-program'], argmap['atom-generators']))
             print pa_ind
-            pop_agents.append( pa_ind )   
-                 
+            pop_agents.append( pa_ind )
+
         f = str('data/'+str(datetime.datetime.now())+'.ser')
         if argmap['save-initial-population']:
             print('SORRY NO SAVING POPULATIONS YET')
-        
+
         ca = []
         for i in range(argmap['population-size']):
             ca.append(Pysh.individual.make_induvidual())
-        
+
         rs = []
         for i in range(argmap['population-size']):
             rs.append(random.randint(0, 9999999))
-            
+
         rg = []
         for i in range(argmap['population-size']):
             temp = random.Random()
             temp.seed(rs[i])
             rg.append(temp)
-        
+
         return {'pop-agents':pop_agents, 'child-agents':ca, 'random-seeds':rs, 'rand-gens':rg}
-        
+
 def compute_errors(pop_agents, rand_gens, argmap):
     for pa in pop_agents:
         pa = Pysh.evaluate.evaluate_individual(pa, argmap['error-function'], rand_gens[1], argmap)
@@ -189,7 +189,7 @@ def parental_reversion(pop_agents, generation, argmap):
             else:
                 return i['parent']
         print "Done performing parent reversion."
-        
+
 def remove_parents(pop_agents, argmap):
     """
     Removes value from :parent for each individual in the population. This will
@@ -197,7 +197,7 @@ def remove_parents(pop_agents, argmap):
     """
     for i in pop_agents:
         i['parent'] = 0
-        
+
 ### calculate-hah-solution-rates-wrapper ### Still needed?? ###
 
 def produce_new_offspring(pop_agents, child_agents, rand_gens, argmap):
@@ -207,11 +207,11 @@ def produce_new_offspring(pop_agents, child_agents, rand_gens, argmap):
         pop = Pysh.Experimental.decimation.decimate(pop_agents, int(argmap['decimation-ratio']*argmap['population-size']), argmap['decimation-tournament-size'], argmap['trivial-geography-radius'])
     for i in range(argmap['population-size']):
         child_agents[i] = Pysh.pushgp.breed.breed(child_agents[i], i, rand_gens[i], pop, push_argmap)
-        
+
 def install_next_generation(pop_agents, child_agents, argmap):
     for i in range(argmap['population-size']):
         pop_agents[i] = pop_agents[i]['child-agents'][i]
-        
+
 def check_genetic_operator_probabilities_add_to_one(argmap):
     prob_keywords = ['mutation-probability', 'crossover-probability', 'simplification-probability', 'ultra-probability', 'gaussian-mutation-probability', 'boolean-gsxover-probability',
                      'deletion-mutation-probability', 'parentheses-addition-mutaion-probability', 'tagging-mutation-probability', 'tag-branch-mutation-probability']
@@ -236,7 +236,7 @@ def timer(argmap, step):
         start_time = Pysh.globals.timer
         current_time_for_step = Pysh.globals.timing_map[step]
         Pysh.globals.timer = current_milli_time()
-        Pysh.globals.timing_map[step] = current_time_for_step + (Pysh.globals.timer - start_time) 
+        Pysh.globals.timing_map[step] = current_time_for_step + (Pysh.globals.timer - start_time)
 
 def pushpg(args):
     '''
@@ -252,10 +252,10 @@ def pushpg(args):
     timer(push_argmap, 'initialization')
     print '\n;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;'
     print '\nGenerating initial population...'
-    
+
     keys = make_agents_and_rng(push_argmap)
     print "INIT FIRST PA", keys[''][0]
-    
+
     generation = 0
     running = 'continue'
     while running is 'continue':
@@ -264,9 +264,9 @@ def pushpg(args):
         print 'Computing errors...'
         compute_errors(keys['pop-agents'], keys['rand-gens'], push_argmap)
         print 'Done computing errors.'
-        
+
         print "First Pop-Agent", keys['pop-agents'][0]
-        
+
         timer(push_argmap, 'fitness')
         #Possible parent reversion
         parental_reversion(keys['pop-agents'], generation, push_argmap)
@@ -278,11 +278,11 @@ def pushpg(args):
             #build-elitegroups(keys['pop-agents'])
             print 'LEXICASE SELECTION NOT IMPLEMENTED YET'
         timer(push_argmap, 'other')
-        
+
         population = []
         for a in keys['pop-agents']:
             population.append(a)
-        
+
         outcome = Pysh.pushgp.report.report_and_check_for_sucess(population, generation, push_argmap)
         if outcome is 'failure':
             print '\nFAILURE'
